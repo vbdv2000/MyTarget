@@ -1,0 +1,7 @@
+{
+  "name": "MyBasket Target",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
