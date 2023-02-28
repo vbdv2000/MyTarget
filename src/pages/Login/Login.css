@@ -1,0 +1,45 @@
+ion-content {
+    --background: var(--ion-background-color, #ffd783);
+  }
+
+
+#iniciar_sesion{
+    margin-left:10%;
+    margin-top:30px;
+    font-size: 30px;
+    font-family: cursive;
+}
+
+
+.links{
+    border-bottom: 2px solid blue;
+    color: blue;
+}
+
+#boton_enviar{
+    margin-top: 40px;
+    --background: #f7971f
+}
+
+#title{
+    font-size: 20px;
+}
+
+#registrate{
+    margin-left:10%;
+    margin-top:60px;
+    font-size: 30px;
+    font-family: cursive;
+}
+
+ion-select.ios{
+    --placeholder-color:black;
+    --placeholder-opacity: 0.8;
+}
+
+ion-select.md{
+    --placeholder-color:black;
+    --placeholder-opacity: 0.8;
+}
+
+
