@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonButton, IonItem, IonLabel, IonText, IonIcon, IonCard, IonFooter, IonGrid, IonCol, IonRow, IonButtons } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonButton, IonItem, IonLabel, IonText, IonIcon, IonCard, IonFooter, IonGrid, IonCol, IonRow, IonButtons, IonBackButton } from '@ionic/react';
 import { basketball } from 'ionicons/icons';
 import './Login.css';
 
@@ -23,7 +23,6 @@ const LoginPage = () => {
 
   return (
     <IonPage>
-      
       <IonContent>
         <IonRow>
           <IonCol style={{ textAlign:"center" }}>
@@ -60,10 +59,10 @@ const LoginPage = () => {
 
           <IonToolbar>
             <IonButtons slot="start">
-              <IonButton color="blue" class='links' fill="clear" routerLink="/recuperar">Olvidé la contraseña</IonButton>
+              <IonButton color="tertiary" fill="outline" routerLink="/recuperar">Olvidé la contraseña</IonButton>
             </IonButtons>
             <IonButtons slot="end">
-              <IonButton color="blue" class='links' fill="clear" routerLink="/registro">Regístrate aquí</IonButton>
+              <IonButton color="tertiary" fill="outline" routerLink="/registro">Regístrate aquí</IonButton>
             </IonButtons>
           </IonToolbar>
           

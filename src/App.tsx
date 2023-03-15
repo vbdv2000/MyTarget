@@ -24,6 +24,7 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 import Page from './pages/Page';
 import Registro from './pages/Login/Registro';
+import Recuperar from './pages/Login/Recuperar';
 
 setupIonicReact();
 
@@ -38,6 +39,7 @@ const App: React.FC = () => {
           <IonRouterOutlet id="main">
           <Route exact path="/login" component={Login} />
           <Route exact path="/registro" component={Registro} />
+          <Route exact path="/recuperar" component={Recuperar} />
 
             <Route path="/" exact={true}>
               <Redirect to="/page/Inicio" />
