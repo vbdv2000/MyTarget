@@ -4,6 +4,7 @@ import {
   IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
+  IonCol,
   IonContent,
   IonIcon,
   IonItem,
@@ -13,10 +14,11 @@ import {
   IonMenu,
   IonMenuToggle,
   IonNote,
+  IonRow,
 } from '@ionic/react';
 
 import { useLocation } from 'react-router-dom';
-import { homeSharp, archiveOutline, archiveSharp, bookmarkOutline, heartOutline, heartSharp, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, trashOutline, trashSharp, warningOutline, warningSharp, statsChartSharp, basketballSharp, personCircleSharp, personSharp } from 'ionicons/icons';
+import { homeSharp, archiveOutline, archiveSharp, bookmarkOutline, heartOutline, heartSharp, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, trashOutline, trashSharp, warningOutline, warningSharp, statsChartSharp, basketballSharp, personCircleSharp, personSharp, basketball } from 'ionicons/icons';
 import './Menu.css';
 
 interface AppPage {
@@ -34,8 +36,8 @@ const appPages: AppPage[] = [
     mdIcon: mailSharp
   },
   {
-    title: 'Gráficos',
-    url: '/page/Graficos',
+    title: 'Estadísticas',
+    url: '/page/Stats',
     iosIcon: statsChartSharp,
     mdIcon: paperPlaneSharp
   },
@@ -47,7 +49,7 @@ const appPages: AppPage[] = [
   },
   {
     title: 'Perfil',
-    url: '/page/Perfil',
+    url: '/perfil',
     iosIcon: personSharp,
     mdIcon: archiveSharp
   }
@@ -58,19 +60,30 @@ const Menu: React.FC = () => {
 
   return (
     <IonMenu contentId="main" type="overlay">
-      <IonContent>
+      <IonContent> 
+        <IonRow>
+          <IonCol style={{ textAlign:"center" }}>
+            <IonIcon ios={basketball} md={basketball}
+                style={{ fontSize: "70px", }}
+            />
+            <p>
+            <IonLabel id='title'>
+                MyBasket Target
+            </IonLabel>
+            </p>
+          </IonCol>
+        </IonRow>
+        <IonCard>
+          <IonCardHeader>
+            <IonCardTitle>Víctor Berenguer Del Valle</IonCardTitle>
+          </IonCardHeader>
+          <IonCardContent>
+            Alero 
+            <br></br>
+            C.B. Jorge Juan
+          </IonCardContent>
+        </IonCard>
         <IonList id="inbox-list">
-          
-          <IonCard>
-            <IonCardHeader>
-              <IonCardTitle>Víctor Berenguer Del Valle</IonCardTitle>
-            </IonCardHeader>
-            <IonCardContent>
-              Alero 
-              <br></br>
-              C.B. Jorge Juan
-            </IonCardContent>
-          </IonCard>
           {appPages.map((appPage, index) => {
             return (
               <IonMenuToggle key={index} autoHide={false}>

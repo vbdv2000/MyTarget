@@ -1,4 +1,4 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonButton, IonCol, IonIcon, IonLabel, IonRow, IonCard, IonItem, IonBackButton, IonButtons } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonButton, IonCol, IonIcon, IonLabel, IonRow, IonCard, IonItem, IonBackButton, IonButtons, useIonToast } from '@ionic/react';
 import { basketball } from 'ionicons/icons';
 import React, { useState } from 'react';
 import './Login.css';
@@ -12,8 +12,20 @@ const Recuperar: React.FC = () => {
 
   const handleSubmit = () => {
     console.log(`Email: ${email}`);
-    // aquí puedes agregar la lógica para enviar el email
+    // aquí va la lógica para enviar el email
   }
+
+  const [present] = useIonToast();
+
+  const presentToast = (position: 'top' | 'middle' | 'bottom') => {
+    present({
+      message: 'Se ha mandado el correo correctamente',
+      duration: 2000,
+      position: position,
+      cssClass: 'custom-toast',
+    });
+  };  
+
 
   return (
     <IonPage>
@@ -51,7 +63,10 @@ const Recuperar: React.FC = () => {
                 <IonInput type="email" placeholder="Escribe el email de la cuenta" onIonChange={handleEmailChange}></IonInput>
             </IonItem>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>                
-                <IonButton id="boton_enviar" onClick={handleSubmit}>Restablecer la contraseña</IonButton>
+                <IonButton id="boton_enviar" onClick={()=>{
+                    presentToast('top');
+                    handleSubmit();
+                    }}>Restablecer la contraseña</IonButton>
             </div>
         </IonCard>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IonPage, IonContent, IonItem, IonLabel, IonInput, IonButton, IonCol, IonIcon, IonRow, IonHeader, IonCard, IonList, IonSelect, IonSelectOption, IonCheckbox, IonToolbar, IonButtons, IonBackButton } from '@ionic/react';
 import { basketball, medalOutline } from 'ionicons/icons';
 import './Login.css';
@@ -14,7 +14,7 @@ const Registro: React.FC = () => {
   const [posicion, setPosicion] = useState<string>('');
   const [mano_habil, setManoHabil] = useState<string>('');
   const [aceptaTerminos, setAceptaTerminos] = useState<boolean>(false);
-
+  const [botonHabilitado, setBotonHabilitado] = useState(false);
 
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -26,8 +26,18 @@ const Registro: React.FC = () => {
     console.log('Contraseña2:', password2);
     console.log('Equipo:', equipo);
     console.log('Posicion:', posicion);
+    console.log('Mano hábil:', mano_habil);
     console.log('Terminos:', aceptaTerminos);
   }
+
+  //Este useEffect se ejecuta cada vez que cambia el valor del checkBox
+  useEffect(() => {
+    if (aceptaTerminos) {
+      setBotonHabilitado(true);
+    } else {
+      setBotonHabilitado(false);
+    }
+  }, [aceptaTerminos]);
 
   return (
     <IonPage>
@@ -49,38 +59,39 @@ const Registro: React.FC = () => {
                     <IonIcon ios={basketball} md={basketball}
                         style={{ fontSize: "70px", marginTop: "15%" }}
                     />
-                    <br></br>
+                    <p>
                     <IonLabel id='title'>
                         MyBasket Target
                     </IonLabel>
+                    </p>
                 </IonCol>
             </IonRow>
             <IonCard>
 
                 <form onSubmit={handleSubmit}>
                 <IonItem>
-                    <IonLabel position="floating">Nombre</IonLabel>
-                    <IonInput type="text" value={nombre} onIonChange={e => setNombre(e.detail.value!)}></IonInput>
+                    <IonLabel position="floating">Nombre *</IonLabel>
+                    <IonInput type="text" value={nombre} onIonChange={e => setNombre(e.detail.value!)} required></IonInput>
                 </IonItem>
 
                 <IonItem>
-                    <IonLabel position="floating">Apellidos</IonLabel>
-                    <IonInput type="text" value={apellidos} onIonChange={e => setApellidos(e.detail.value!)}></IonInput>
+                    <IonLabel position="floating">Apellidos *</IonLabel>
+                    <IonInput type="text" value={apellidos} onIonChange={e => setApellidos(e.detail.value!)} required></IonInput>
                 </IonItem>
 
                 <IonItem>
-                    <IonLabel position="floating">Email</IonLabel>
-                    <IonInput type="email" value={email} onIonChange={e => setEmail(e.detail.value!)}></IonInput>
+                    <IonLabel position="floating">Email *</IonLabel>
+                    <IonInput type="email" value={email} onIonChange={e => setEmail(e.detail.value!)} required></IonInput>
                 </IonItem>
 
                 <IonItem>
-                    <IonLabel position="floating">Contraseña</IonLabel>
-                    <IonInput type="password" value={password} onIonChange={e => setPassword(e.detail.value!)}></IonInput>
+                    <IonLabel position="floating">Contraseña *</IonLabel>
+                    <IonInput type="password" value={password} onIonChange={e => setPassword(e.detail.value!)} required></IonInput>
                 </IonItem>
 
                 <IonItem>
-                    <IonLabel position="floating">Repita la contraseña</IonLabel>
-                    <IonInput type="password" value={password2} onIonChange={e => setPassword2(e.detail.value!)}></IonInput>
+                    <IonLabel position="floating">Repita la contraseña *</IonLabel>
+                    <IonInput type="password" value={password2} onIonChange={e => setPassword2(e.detail.value!)} required></IonInput>
                 </IonItem>
 
                 <IonItem>
@@ -88,7 +99,7 @@ const Registro: React.FC = () => {
                     <IonInput type="text" value={equipo} onIonChange={e => setEquipo(e.detail.value!)}></IonInput>
                 </IonItem>
                     
-                <IonRow style={{marginTop: "15px"}}>
+                <IonRow>
                     <IonCol>
                         <IonList>
                             <IonItem>
@@ -121,7 +132,7 @@ const Registro: React.FC = () => {
                 </IonItem>
 
 
-                <IonButton id="boton_enviar" type="submit" expand='block'>Continuar</IonButton>
+                <IonButton id="boton_enviar" type="submit" expand='block' disabled={!botonHabilitado}>Continuar</IonButton>
                 </form>
 
                 <IonRow>

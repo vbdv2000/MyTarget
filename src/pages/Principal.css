@@ -1,0 +1,29 @@
+ion-content {
+    --background: var(--ion-background-color, #ffc753);
+  }
+
+#miperfil{
+    margin-left:8%;
+    margin-top:50px;
+    margin-bottom: 30px;
+    font-size: 30px;
+    font-family: cursive;
+}
+
+ion-select.ios{
+    --placeholder-color:black;
+    --placeholder-opacity: 0.8;
+}
+
+
+ion-select.md{
+    --placeholder-color:black;
+    --placeholder-opacity: 0.8;
+    
+}
+
+ion-toast.custom-toast {
+    --background: #f4faf6;
+    --box-shadow: 3px 3px 10px 0 rgba(0, 0, 0, 0.2);
+    --color: #00d40b;
+}

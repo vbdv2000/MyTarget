@@ -1,24 +1,48 @@
 import React, { useState } from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonButton, IonItem, IonLabel, IonText, IonIcon, IonCard, IonFooter, IonGrid, IonCol, IonRow, IonButtons, IonBackButton } from '@ionic/react';
-import { basketball } from 'ionicons/icons';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonButton, IonItem, IonLabel, IonText, IonIcon, IonCard, IonFooter, IonGrid, IonCol, IonRow, IonButtons, IonBackButton, useIonToast } from '@ionic/react';
+import { basketball, timer } from 'ionicons/icons';
 import './Login.css';
+import { Redirect, Route } from 'react-router';
+import { waitFor } from '@testing-library/react';
 
 
 const LoginPage = () => {
-  const [username, setUsername] = useState('');
+  const [login, setLogin] = useState('false');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = () => {
+  
+
+  const [present] = useIonToast();
+  
+  const presentToast = () => {
+    present({
+      message: 'Ha iniciado sesión correctamente!',
+      duration: 1500,
+      position: 'top',
+      cssClass: 'custom-toast',
+    });
+  };  
+
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  
     // Aquí va la lógica para iniciar sesión
-  };
-
-  const handleUsernameChange = (e: any) => {
-    setUsername(e.target.value);
-  };
-
-  const handlePasswordChange = (e: any) => {
-    setPassword(e.target.value);
+    if (!email || !password) {
+      setError('Por favor ingrese su correo electrónico y contraseña.');
+      return;
+    }
+    if(email == "prueba@gmail.com" && password== "prueba"){
+      presentToast();
+      setTimeout(()=>{}, 2000);
+      setLogin("true");
+      window.location.href = '/page/Inicio';
+    } else {
+      setLogin("false");
+      setError('El usuario o la contraseña no son correctos.');
+      
+    }
   };
 
   return (
@@ -45,16 +69,18 @@ const LoginPage = () => {
         </IonHeader>
         
         <IonCard>
-          <IonItem>
-            <IonLabel position="floating">Correo electrónico</IonLabel>
-            <IonInput type="email" value={username} onIonChange={handleUsernameChange}></IonInput>
-          </IonItem>
-          <IonItem>
-            <IonLabel position="floating">Contraseña</IonLabel>
-            <IonInput type="password" value={password} onIonChange={handlePasswordChange}></IonInput>
-          </IonItem>
-          {error && <IonText color="danger">{error}</IonText>}
-          <IonButton id="boton_enviar" expand="block" onClick={handleLogin}>Iniciar sesión</IonButton>
+          <form onSubmit={handleLogin}>
+            <IonItem>
+              <IonLabel position="floating">Correo electrónico</IonLabel>
+              <IonInput type="email" value={email} onIonChange={e => setEmail(e.detail.value!)} required></IonInput>
+            </IonItem>
+            <IonItem>
+              <IonLabel position="floating">Contraseña</IonLabel>
+              <IonInput type="password" value={password} onIonChange={e => setPassword(e.detail.value!)} required></IonInput>
+            </IonItem>
+            {error && <IonText color="danger">{error}</IonText>}
+            <IonButton id="boton_enviar" type="submit" expand="block" >Iniciar sesión</IonButton>
+          </form>
           
 
           <IonToolbar>
@@ -74,3 +100,5 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
+

@@ -25,6 +25,7 @@ import './theme/variables.css';
 import Page from './pages/Page';
 import Registro from './pages/Login/Registro';
 import Recuperar from './pages/Login/Recuperar';
+import Perfil from './pages/Perfil';
 
 setupIonicReact();
 
@@ -40,6 +41,7 @@ const App: React.FC = () => {
           <Route exact path="/login" component={Login} />
           <Route exact path="/registro" component={Registro} />
           <Route exact path="/recuperar" component={Recuperar} />
+          <Route exact path="/perfil" component={Perfil} />
 
             <Route path="/" exact={true}>
               <Redirect to="/page/Inicio" />

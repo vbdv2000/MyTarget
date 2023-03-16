@@ -17,7 +17,7 @@ ion-content {
 }
 
 #boton_enviar{
-    margin-top: 30px;
+    margin-top: 10px;
     --background: #f7971f
 }
 
@@ -60,3 +60,11 @@ ion-select.md{
     margin-right: 20px;
     font-family: system-ui;
 }
+
+
+ion-toast.custom-toast {
+    --background: #f4faf6;
+    --box-shadow: 3px 3px 10px 0 rgba(0, 0, 0, 0.2);
+    --color: #00d40b;
+}
+    
