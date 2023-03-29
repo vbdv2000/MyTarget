@@ -97,6 +97,7 @@ app.post('/registro', async (req, res) => {
 app.get('/usuario', async (req, res) => {
   const token = req.cookies.token;
   res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.header('Access-Control-Allow-Credentials', 'true');
   const email = await tokenService.decodificaToken(token);
   try{
     const connection = await conectarDB();

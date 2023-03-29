@@ -39,8 +39,8 @@ const LoginPage = () => {
       setCookie('token',token);
       setTimeout(()=>{}, 2000);
 
-      history.push('/perfil')
-      //window.location.href = '/page/Inicio';
+      //history.push('/perfil')
+      window.location.href = '/perfil';
     } catch (error) {
       setError("Usuario o contraseña incorrectos");
     }
