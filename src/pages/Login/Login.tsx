@@ -2,32 +2,49 @@ import React, { useState } from 'react';
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonButton, IonItem, IonLabel, IonText, IonIcon, IonCard, IonFooter, IonGrid, IonCol, IonRow, IonButtons, IonBackButton, useIonToast } from '@ionic/react';
 import { basketball, timer } from 'ionicons/icons';
 import './Login.css';
-import { Redirect, Route } from 'react-router';
-import { waitFor } from '@testing-library/react';
+import axios from 'axios';
+import { useHistory } from 'react-router';
+import { useCookies } from 'react-cookie';
+
+
 
 
 const LoginPage = () => {
-  const [login, setLogin] = useState('false');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-
-  
+  const history = useHistory();
+  const [cookies, setCookie] = useCookies(['token']);
 
   const [present] = useIonToast();
   
   const presentToast = () => {
     present({
-      message: 'Ha iniciado sesión correctamente!',
+      message: "Ha iniciado sesión correctamente!",
       duration: 1500,
-      position: 'top',
-      cssClass: 'custom-toast',
+      position: "top",
+      cssClass: "custom-toast",
     });
   };  
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin =  async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-  
+
+    try {
+      const response = await axios.post('http://localhost:5000/login', { email, password });
+      var token = response.data.token;
+      //localStorage.setItem('token', token);
+      console.log(response);
+      presentToast();
+      setCookie('token',token);
+      setTimeout(()=>{}, 2000);
+
+      history.push('/perfil')
+      //window.location.href = '/page/Inicio';
+    } catch (error) {
+      setError("Usuario o contraseña incorrectos");
+    }
+    /*
     // Aquí va la lógica para iniciar sesión
     if (!email || !password) {
       setError('Por favor ingrese su correo electrónico y contraseña.');
@@ -43,6 +60,7 @@ const LoginPage = () => {
       setError('El usuario o la contraseña no son correctos.');
       
     }
+    */
   };
 
   return (

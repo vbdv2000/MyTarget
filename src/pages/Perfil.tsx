@@ -1,9 +1,12 @@
 import { IonBackButton, IonButton, IonButtons, IonCard, IonCheckbox, IonCol, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonSelect, IonSelectOption, IonText, IonTitle, IonToolbar, useIonToast } from '@ionic/react';
-import { basketball } from 'ionicons/icons';
+import axios from 'axios';
 import { useEffect, useState } from 'react';
 import './Principal.css';
-const Perfil: React.FC = () => {
+import { useHistory } from 'react-router';
+import { useCookies } from 'react-cookie';
 
+const Perfil: React.FC = () => {
+  const history = useHistory();
   const [present] = useIonToast();
   
   const presentToast = () => {
@@ -14,12 +17,14 @@ const Perfil: React.FC = () => {
       cssClass: 'custom-toast',
     });
   };  
-  const [nombre, setNombre] = useState('Víctor');
-  const [apellidos, setApellidos] = useState('Berenguer Del Valle');
-  const [email, setEmail] = useState('victor@example.com');
-  const [equipo, setEquipo] = useState('C.B. Jorge Juan');
-  const [posicion, setPosicion] = useState('alero');
-  const [mano_habil, setManoHabil] = useState('derecha');
+  const [nombre, setNombre] = useState('');
+  const [apellidos, setApellidos] = useState('');
+  const [email, setEmail] = useState('');
+  const [equipo, setEquipo] = useState('');
+  const [posicion, setPosicion] = useState('');
+  const [mano_habil, setManoHabil] = useState('');
+  const [error, setError] = useState('');
+  const [cookies, setCookie] = useCookies(['token']);
 
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -35,6 +40,43 @@ const Perfil: React.FC = () => {
 
   };
 
+  useEffect(() => {
+    async function llamadaAPI (){
+      const token = cookies.token;
+     
+      if(!token){
+        // Si no hay token, redirigimos a la página de login
+        history.push('/login');
+        return;
+      }
+  
+      console.log(token);
+      try{
+        const response = await axios.get('http://localhost:5000/usuario', 
+        { 
+          withCredentials: true
+        });
+        console.log(response.data)
+        const usuario = response.data;
+  
+        setNombre(usuario.nombre);
+        setApellidos(usuario.apellidos);
+        setEmail(usuario.email);
+        setEquipo(usuario.equipo);
+        setPosicion(usuario.posicion);
+        setManoHabil(usuario.mano_habil);
+      }  catch (error) {
+        console.log("Algo ha ido mal obteniendo el usuario");
+        setError("Algo ha ido mal obteniendo el usuario");
+      }
+    };
+
+    llamadaAPI();
+  }, []);
+
+  
+
+  
   return (
     <IonPage>
       <IonContent>

@@ -26,23 +26,29 @@ import Page from './pages/Page';
 import Registro from './pages/Login/Registro';
 import Recuperar from './pages/Login/Recuperar';
 import Perfil from './pages/Perfil';
+import CrearSesion from './pages/CrearSesion';
+import { useState } from 'react';
 
 setupIonicReact();
 
 
 const App: React.FC = () => {
+  
   return (
     <IonApp>
       <IonReactRouter>
         
+        
         <IonSplitPane contentId="main">
           <Menu />
           <IonRouterOutlet id="main">
-          <Route exact path="/login" component={Login} />
-          <Route exact path="/registro" component={Registro} />
-          <Route exact path="/recuperar" component={Recuperar} />
-          <Route exact path="/perfil" component={Perfil} />
-
+            <Route exact path="/login" component={Login} />
+            <Redirect exact from="/" to="/login" />
+            <Route exact path="/registro" component={Registro} />
+            <Route exact path="/recuperar" component={Recuperar} />
+            <Route exact path="/perfil" component={Perfil} />
+            <Route exact path="/crearSesion" component={CrearSesion} />
+            
             <Route path="/" exact={true}>
               <Redirect to="/page/Inicio" />
             </Route>

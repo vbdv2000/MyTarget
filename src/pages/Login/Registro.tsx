@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { IonPage, IonContent, IonItem, IonLabel, IonInput, IonButton, IonCol, IonIcon, IonRow, IonHeader, IonCard, IonList, IonSelect, IonSelectOption, IonCheckbox, IonToolbar, IonButtons, IonBackButton } from '@ionic/react';
+import { IonPage, IonContent, IonItem, IonLabel, IonInput, IonButton, IonCol, IonIcon, IonRow, IonHeader, IonCard, IonList, IonSelect, IonSelectOption, IonCheckbox, IonToolbar, IonButtons, IonBackButton, useIonToast, IonText } from '@ionic/react';
 import { basketball, medalOutline } from 'ionicons/icons';
 import './Login.css';
+import axios from 'axios';
 
 
 const Registro: React.FC = () => {
@@ -15,10 +16,37 @@ const Registro: React.FC = () => {
   const [mano_habil, setManoHabil] = useState<string>('');
   const [aceptaTerminos, setAceptaTerminos] = useState<boolean>(false);
   const [botonHabilitado, setBotonHabilitado] = useState(false);
-
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [error, setError] = useState('');
+  
+  const [present] = useIonToast();
+  
+  const presentToast = () => {
+    present({
+      message: "Se ha creado el usuario correctamente",
+      duration: 1500,
+      position: "top",
+      cssClass: "custom-toast",
+    });
+  };  
+  
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    try {
+        if(password == password2){
+            const response = await axios.post('http://localhost:5000/registro', 
+            { nombre, apellidos, email, password, equipo, posicion, mano_habil});
+            console.log(response);
+            presentToast();
+            setTimeout(()=>{}, 2000);
+            //window.location.href = '/page/Inicio';
+        } else{
+            setError("Las contraseñas deben coincidir");
+        }
+        
+    } catch (err) {
+        setError("Email ya registrado en nuestra base de datos");
+    }
+      /*
     console.log('Nombre:', nombre);
     console.log('Apellidos:', apellidos);
     console.log('Email:', email);
@@ -28,6 +56,7 @@ const Registro: React.FC = () => {
     console.log('Posicion:', posicion);
     console.log('Mano hábil:', mano_habil);
     console.log('Terminos:', aceptaTerminos);
+    */
   }
 
   //Este useEffect se ejecuta cada vez que cambia el valor del checkBox
@@ -131,7 +160,7 @@ const Registro: React.FC = () => {
                     <IonLabel>Acepto los términos y condiciones</IonLabel>
                 </IonItem>
 
-
+                {error && <IonText color="danger">{error}</IonText>}
                 <IonButton id="boton_enviar" type="submit" expand='block' disabled={!botonHabilitado}>Continuar</IonButton>
                 </form>
 
