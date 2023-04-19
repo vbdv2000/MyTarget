@@ -5,7 +5,8 @@ async function conectarDB() {
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'mytarget'
+    database: 'mytarget',
+    timezone: 'UTC' 
   });
   return connection;
 }

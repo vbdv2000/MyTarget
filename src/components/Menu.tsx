@@ -1,4 +1,5 @@
 import {
+  IonButton,
   IonCard,
   IonCardContent,
   IonCardHeader,
@@ -17,9 +18,13 @@ import {
   IonRow,
 } from '@ionic/react';
 
-import { useLocation } from 'react-router-dom';
-import { homeSharp, archiveOutline, archiveSharp, bookmarkOutline, heartOutline, heartSharp, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, trashOutline, trashSharp, warningOutline, warningSharp, statsChartSharp, basketballSharp, personCircleSharp, personSharp, basketball } from 'ionicons/icons';
+import { useHistory, useLocation } from 'react-router-dom';
+import { homeSharp, statsChartSharp, basketballSharp, personSharp, basketball, logOutSharp } from 'ionicons/icons';
 import './Menu.css';
+import { useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import axios from 'axios';
+
 
 interface AppPage {
   url: string;
@@ -33,32 +38,90 @@ const appPages: AppPage[] = [
     title: 'Inicio',
     url: '/page/Inicio',
     iosIcon: homeSharp,
-    mdIcon: mailSharp
+    mdIcon: homeSharp
   },
   {
     title: 'Estadísticas',
     url: '/page/Stats',
     iosIcon: statsChartSharp,
-    mdIcon: paperPlaneSharp
+    mdIcon: statsChartSharp
   },
   {
     title: 'Sesiones de tiro',
-    url: '/page/Sesiones',
+    url: '/sesiones',
     iosIcon: basketballSharp,
-    mdIcon: heartSharp
+    mdIcon: basketballSharp
   },
   {
     title: 'Perfil',
     url: '/perfil',
     iosIcon: personSharp,
-    mdIcon: archiveSharp
+    mdIcon: personSharp
   }
 ];
 
 const Menu: React.FC = () => {
   const location = useLocation();
+  const [nombre, setNombre] = useState('');
+  const [apellidos, setApellidos] = useState('');
+  const [email, setEmail] = useState('');
+  const [equipo, setEquipo] = useState('');
+  const [posicion, setPosicion] = useState('');
+  const [cookies, setCookie, removeCookie] = useCookies(['token']);
+  const history = useHistory();
+  
+  const token = cookies.token;
+  useEffect(() => {
+    async function llamadaAPI (){
+      const token = cookies.token;
+      if(!token ){
+        // Si no hay token, redirigimos a la página de login
+        history.push('/login');
+        return;
+      }
+      try{
+        const response = await axios.get('http://localhost:5000/usuario', 
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        console.log(response.data)
+        const usuario = response.data;
+  
+        setEmail(usuario.email);
+        setNombre(usuario.nombre);
+        setApellidos(usuario.apellidos);
+        setEquipo(usuario.equipo);
+        const posicionMayuscula = usuario.posicion.charAt(0).toUpperCase() + usuario.posicion.slice(1);
+        setPosicion(posicionMayuscula);
+      }  catch (error) {
+        removeCookie(token);
+        console.log("Algo ha ido mal obteniendo datos del usuario");
+        history.push('/login');
+      }
+    };
 
+    llamadaAPI();
+  }, []);
+
+  const cerrarSesion = async () => {
+    const token = cookies.token;
+    
+    try{
+    
+      setCookie('token','');
+      console.log(token);
+      window.location.href = '/login';
+    }  catch (error) {
+      //removeCookie(token);
+      console.log("Algo ha ido mal haciendo logout");
+      //history.push('/login');
+    }
+  }
   return (
+    <>
+    {token &&(
     <IonMenu contentId="main" type="overlay">
       <IonContent> 
         <IonRow>
@@ -75,12 +138,12 @@ const Menu: React.FC = () => {
         </IonRow>
         <IonCard>
           <IonCardHeader>
-            <IonCardTitle>Víctor Berenguer Del Valle</IonCardTitle>
+            <IonCardTitle>{nombre} {apellidos}</IonCardTitle>
           </IonCardHeader>
           <IonCardContent>
-            Alero 
+            {posicion}
             <br></br>
-            C.B. Jorge Juan
+            {equipo}
           </IonCardContent>
         </IonCard>
         <IonList id="inbox-list">
@@ -95,10 +158,17 @@ const Menu: React.FC = () => {
             );
           })}
         </IonList>
-
+          <div className='botonLogout'>
+            <IonButton  onClick={cerrarSesion} color={"danger"}>
+              <IonIcon icon={logOutSharp} slot="end" color='dark'></IonIcon>
+              Cerrar sesión
+            </IonButton>
+          </div>
         
       </IonContent>
     </IonMenu>
+    )}
+    </>
   );
 };
 

@@ -1,7 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
-const secret = require('./config').secret;
+const tokenExpTime = require('./config').tokenExpTime;
+
 const tokenService = require('./services/token.service');
 const { conectarDB } = require('./database');
 const cookieParser = require('cookie-parser');
@@ -12,8 +13,23 @@ app.use(cookieParser());
 app.use(cors());
 app.use(express.urlencoded({extended: true}));
 
-
 const port = process.env.PORT || 5000; //Line 3
+
+async function auth(req, res, next) {
+  const token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : null;
+  if (!token) {
+    return res.status(401).send('No hay token');
+  }
+  
+  try{
+    const email = await tokenService.decodificaToken(token);
+    req.email = email;
+    next();
+  } catch(error){
+    return res.status(401).send('Token de autenticación no válido');
+  }
+
+}
 
 
 app.post('/login', async (req, res) => {
@@ -33,7 +49,7 @@ app.post('/login', async (req, res) => {
             // Inicio correcto
             const token = tokenService.creaToken(usuarioEncontrado);
             console.log(token);
-            res.cookie('token', token, { maxAge: 3600000, httpOnly: true }); //Enviamos una cookie con una duración de 1 hora
+            res.cookie('token', token, { maxAge: tokenExpTime, httpOnly: true }); //Enviamos una cookie con una duración de 1 min
             res.status(200).json({ token, usuario: {email: usuarioEncontrado.email } });
           } else {
             // Error de contraseña
@@ -94,11 +110,10 @@ app.post('/registro', async (req, res) => {
 });
 
 
-app.get('/usuario', async (req, res) => {
-  const token = req.cookies.token;
+app.get('/usuario', auth, async (req, res) => {
+  const email = req.email;
   res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
   res.header('Access-Control-Allow-Credentials', 'true');
-  const email = await tokenService.decodificaToken(token);
   try{
     const connection = await conectarDB();
     const [rows] = await connection.execute('SELECT * FROM usuario WHERE email = ? ', [email]);
@@ -142,6 +157,119 @@ app.get('/usuario', async (req, res) => {
 });
 */
 
+app.put('/usuario', auth, async (req, res) => {
+  const email = req.email;
+  console.log(email);
+  try{
+    const { nombre, apellidos, equipo, posicion, mano_habil } = req.body;
+    const connection = await conectarDB();
+    const [rows] = await connection.execute(
+      `UPDATE usuario SET nombre = ?, apellidos = ?, equipo = ?, posicion = ?, mano_habil = ? WHERE email = ?`,
+      [nombre, apellidos, equipo, posicion, mano_habil, email]
+    );
+    res.status(200).json({ 
+      mensaje: 'Usuario actualizado correctamente' , 
+      usuario: {
+        email: email,
+        nombre: nombre,
+        apellidos: apellidos,
+        equipo: equipo,
+        posicion: posicion,
+        mano_habil: mano_habil
+      }});
+      
+  } catch(error){
+    res.status(error.status).json({ message: error.message });
+  }
+});
+
+
+
+app.get('/sesiones', auth,  async (req, res) => {
+  const email = req.email ;
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.header('Access-Control-Allow-Credentials', 'true');
+ 
+  try{
+    const connection = await conectarDB();
+    const [rows] = await connection.execute('SELECT * FROM sesion WHERE usuario = ? ORDER BY fecha DESC', [email]);
+
+    // Enviamos las sesiones
+    if (rows.length > 0) {
+      res.status(201).json({sesiones: rows});
+    } else {
+      res.status(404).send('Sesiones no encontradas'); // Si no hay resultados, enviamos un error 404 
+    }
+    } catch(error){
+    res.status(error.status).json({ message: error.message });
+  }
+})
+
+app.delete('/sesiones/:fecha/:hora', auth, async (req, res) => {
+  const email = req.email ;
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.header('Access-Control-Allow-Credentials', 'true');
+
+  const fecha = req.params.fecha;
+  const hora = req.params.hora;  
+  try {
+    const connection = await conectarDB();
+    const [rows] = await connection.execute('DELETE FROM sesion WHERE fecha=? and hora=? and usuario=?', [fecha, hora, email]);
+    res.status(201).json({mensaje: "La sesion se ha eliminado correctamente"});
+    
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error.message);
+  }
+  
+});
+
+app.post('/sesion', auth, async (req, res) => {
+  const usuario = req.email ;
+  const { nombre, fecha, hora, tr1, ta1, tr2, ta2, tr3, ta3, tr4, ta4, tr5, ta5 } = req.body;
+  try {
+    const connection = await conectarDB();
+
+    
+    const [result] = await connection.query('INSERT INTO sesion (nombre, fecha, hora, usuario) VALUES (?, ?, ?, ?)', 
+    [ 
+      nombre, 
+      fecha, 
+      hora, 
+      usuario
+    ]);  
+    //Bucle para crear las zonas de la sesion y que se haga una transacción
+    for (let index = 1; index <= 5; index++) {
+      tiros_realizados=eval("tr"+index);
+      tiros_anotados=eval("ta"+index);
+      tiros_realizados === '' ? 0 : tiros_realizados,
+      tiros_anotados === '' ? 0 : tiros_anotados, 
+        console.log(tiros_realizados);
+        console.log(tiros_anotados);
+      const [result2] = await connection.query('INSERT INTO zona (posicion, tiros_realizados, tiros_anotados, fecha, hora, usuario) VALUES(?, ?, ?, ?, ?, ?)', 
+      [ 
+        index, 
+        tiros_realizados === '' ? 0 : tiros_realizados,
+        tiros_anotados === '' ? 0 : tiros_anotados, 
+        fecha,
+        hora,
+        usuario
+      ]);  
+      
+    }
+    console.log(result);  
+    //console.log(result2);  
+
+    res.status(201).json({
+      mensaje: 'Sesión y zonas creadas con éxito',
+      usuario: usuario
+    });
+  } catch (error) {
+    console.error(error);
+    // Enviamos una respuesta de error 
+    res.status(500).send('Error al crear usuario');
+  }
+});
 
 app.listen(port, () => {
   console.log(`Servidor iniciado en el puerto ${port}`); //Line 6

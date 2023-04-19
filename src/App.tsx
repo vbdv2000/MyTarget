@@ -27,13 +27,14 @@ import Registro from './pages/Login/Registro';
 import Recuperar from './pages/Login/Recuperar';
 import Perfil from './pages/Perfil';
 import CrearSesion from './pages/CrearSesion';
-import { useState } from 'react';
+import Sesiones from './pages/Sesiones';
 
 setupIonicReact();
 
 
 const App: React.FC = () => {
-  
+
+
   return (
     <IonApp>
       <IonReactRouter>
@@ -48,9 +49,10 @@ const App: React.FC = () => {
             <Route exact path="/recuperar" component={Recuperar} />
             <Route exact path="/perfil" component={Perfil} />
             <Route exact path="/crearSesion" component={CrearSesion} />
-            
+            <Route exact path="/sesiones" component={Sesiones} />
+
             <Route path="/" exact={true}>
-              <Redirect to="/page/Inicio" />
+              <Redirect to="/login" />
             </Route>
             
            

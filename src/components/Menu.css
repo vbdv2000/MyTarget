@@ -77,6 +77,9 @@ ion-menu.md ion-card-title {
 }
 
 ion-menu.ios ion-content {
+  --padding-start: 8px;
+  --padding-end: 6px;
+  --padding-top: 20px;
   --padding-bottom: 20px;
 }
 
@@ -140,3 +143,8 @@ ion-item.selected {
   --color: var(--ion-color-primary);
   background-color: #fff6ea;
 } 
+
+.botonLogout{
+  margin-top: 75%;
+  color: black;
+}

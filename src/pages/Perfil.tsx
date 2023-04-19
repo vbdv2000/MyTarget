@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import './Principal.css';
 import { useHistory } from 'react-router';
 import { useCookies } from 'react-cookie';
+import Menu from '../components/Menu';
 
 const Perfil: React.FC = () => {
   const history = useHistory();
@@ -14,9 +15,10 @@ const Perfil: React.FC = () => {
       message: 'Se han modificado los datos correctamente',
       duration: 1500,
       position: 'top',
-      cssClass: 'custom-toast',
+      cssClass: 'datosModificados',
     });
   };  
+
   const [nombre, setNombre] = useState('');
   const [apellidos, setApellidos] = useState('');
   const [email, setEmail] = useState('');
@@ -24,19 +26,35 @@ const Perfil: React.FC = () => {
   const [posicion, setPosicion] = useState('');
   const [mano_habil, setManoHabil] = useState('');
   const [error, setError] = useState('');
-  const [cookies, setCookie] = useCookies(['token']);
+  const [cookies, setCookie, removeCookie] = useCookies(['token']);
 
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    presentToast();
-    // Aquí se enviarían los datos actualizados a la API 
-    console.log('Nombre:', nombre);
-    console.log('Apellidos:', apellidos);
-    console.log('Email:', email);
-    console.log('Equipo:', equipo);
-    console.log('Posicion:', posicion);
-    console.log('Mano hábil:', mano_habil);
+    const token = cookies.token;
+
+    try {
+      console.log(email);      
+      const response = await axios.put(`http://localhost:5000/usuario`, 
+      { nombre, apellidos, equipo, posicion, mano_habil}, 
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      console.log(response.data);
+      presentToast();
+      setNombre(response.data.usuario.nombre);
+      setApellidos(response.data.usuario.apellidos);
+      setEquipo(response.data.usuario.equipo);
+      setPosicion(response.data.usuario.posicion);
+      setManoHabil(response.data.usuario.mano_habil);
+
+      setTimeout(()=>{}, 2000);      //history.push('/perfil')
+      window.location.href = '/perfil';
+    } catch (error) {
+      console.log(error);
+    }
 
   };
 
@@ -44,29 +62,32 @@ const Perfil: React.FC = () => {
     async function llamadaAPI (){
       const token = cookies.token;
      
-      if(!token){
+      if(!token ){
         // Si no hay token, redirigimos a la página de login
         history.push('/login');
         return;
       }
-  
+      
       console.log(token);
       try{
         const response = await axios.get('http://localhost:5000/usuario', 
-        { 
-          withCredentials: true
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
         });
         console.log(response.data)
         const usuario = response.data;
   
+        setEmail(usuario.email);
         setNombre(usuario.nombre);
         setApellidos(usuario.apellidos);
-        setEmail(usuario.email);
         setEquipo(usuario.equipo);
         setPosicion(usuario.posicion);
         setManoHabil(usuario.mano_habil);
       }  catch (error) {
-        console.log("Algo ha ido mal obteniendo el usuario");
+        setCookie('token','');
+        history.push('/login');
         setError("Algo ha ido mal obteniendo el usuario");
       }
     };
@@ -88,7 +109,7 @@ const Perfil: React.FC = () => {
             <IonTitle>Mi perfil</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <h2 id="miperfil">
+        <h2 id="encabezado">
           Mi perfil
         </h2>
       
@@ -104,11 +125,6 @@ const Perfil: React.FC = () => {
             <IonItem>
                 <IonLabel position="floating">Apellidos</IonLabel>
                 <IonInput type="text" value={apellidos} onIonChange={e => setApellidos(e.detail.value!)} required></IonInput>
-            </IonItem>
-
-            <IonItem>
-                <IonLabel position="floating">Email</IonLabel>
-                <IonInput type="email" value={email} onIonChange={e => setEmail(e.detail.value!)} required></IonInput>
             </IonItem>
 
             <IonItem>
@@ -143,7 +159,7 @@ const Perfil: React.FC = () => {
                 </IonCol>
             </IonRow>
 
-
+            
             <IonButton id="boton_enviar" expand='block' type="submit">Confirmar datos</IonButton>
           </form>
         </IonCard>
