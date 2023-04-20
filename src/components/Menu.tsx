@@ -8,6 +8,7 @@ import {
   IonCol,
   IonContent,
   IonIcon,
+  IonImg,
   IonItem,
   IonLabel,
   IonList,
@@ -18,12 +19,15 @@ import {
   IonRow,
 } from '@ionic/react';
 
+import logo from '../../public/assets/icono-negro-sin-fondo.png';
+
 import { useHistory, useLocation } from 'react-router-dom';
 import { homeSharp, statsChartSharp, basketballSharp, personSharp, basketball, logOutSharp } from 'ionicons/icons';
 import './Menu.css';
 import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import axios from 'axios';
+import { direccionIP } from '../../config';
 
 
 interface AppPage {
@@ -80,7 +84,7 @@ const Menu: React.FC = () => {
         return;
       }
       try{
-        const response = await axios.get('http://localhost:5000/usuario', 
+        const response = await axios.get(`http://${direccionIP}:5000/usuario`, 
         {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -126,14 +130,13 @@ const Menu: React.FC = () => {
       <IonContent> 
         <IonRow>
           <IonCol style={{ textAlign:"center" }}>
-            <IonIcon ios={basketball} md={basketball}
-                style={{ fontSize: "70px", }}
-            />
-            <p>
+            <IonImg className='logo' src={logo} alt="logo" />
+            
+            
             <IonLabel id='title'>
-                MyBasket Target
+                MyTarget
             </IonLabel>
-            </p>
+            
           </IonCol>
         </IonRow>
         <IonCard>
@@ -159,7 +162,7 @@ const Menu: React.FC = () => {
           })}
         </IonList>
           <div className='botonLogout'>
-            <IonButton  onClick={cerrarSesion} color={"danger"}>
+            <IonButton onClick={cerrarSesion} color={"danger"}>
               <IonIcon icon={logOutSharp} slot="end" color='dark'></IonIcon>
               Cerrar sesión
             </IonButton>

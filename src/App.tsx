@@ -28,6 +28,7 @@ import Recuperar from './pages/Login/Recuperar';
 import Perfil from './pages/Perfil';
 import CrearSesion from './pages/CrearSesion';
 import Sesiones from './pages/Sesiones';
+import ModificarSesion from './pages/ModificarSesion';
 
 setupIonicReact();
 
@@ -50,6 +51,7 @@ const App: React.FC = () => {
             <Route exact path="/perfil" component={Perfil} />
             <Route exact path="/crearSesion" component={CrearSesion} />
             <Route exact path="/sesiones" component={Sesiones} />
+            <Route exact path="/modificarSesion" component={ModificarSesion} />
 
             <Route path="/" exact={true}>
               <Redirect to="/login" />

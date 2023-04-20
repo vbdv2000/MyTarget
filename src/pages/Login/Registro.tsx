@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { IonPage, IonContent, IonItem, IonLabel, IonInput, IonButton, IonCol, IonIcon, IonRow, IonHeader, IonCard, IonList, IonSelect, IonSelectOption, IonCheckbox, IonToolbar, IonButtons, IonBackButton, useIonToast, IonText } from '@ionic/react';
-import { basketball, medalOutline } from 'ionicons/icons';
+import { IonPage, IonContent, IonItem, IonLabel, IonInput, IonButton, IonCol, IonIcon, IonRow, IonHeader, IonCard, IonList, IonSelect, IonSelectOption, IonCheckbox, IonToolbar, IonButtons, IonBackButton, useIonToast, IonText, IonImg } from '@ionic/react';
 import './Login.css';
 import axios from 'axios';
+import { direccionIP } from '../../../config';
+import logo from '../../../public/assets/icono-negro-sin-fondo.png';
 
 
 const Registro: React.FC = () => {
@@ -33,12 +34,12 @@ const Registro: React.FC = () => {
     e.preventDefault();
     try {
         if(password == password2){
-            const response = await axios.post('http://localhost:5000/registro', 
+            const response = await axios.post(`http://${direccionIP}:5000/registro`, 
             { nombre, apellidos, email, password, equipo, posicion, mano_habil});
             console.log(response);
             presentToast();
             setTimeout(()=>{}, 2000);
-            //window.location.href = '/page/Inicio';
+            window.location.href = '/login';
         } else{
             setError("Las contraseñas deben coincidir");
         }
@@ -72,9 +73,9 @@ const Registro: React.FC = () => {
     <IonPage>
         <IonHeader>
             <IonToolbar>
-            <IonButtons slot="start">
-                <IonBackButton defaultHref="/login" />
-            </IonButtons>
+                <IonButtons slot="start">
+                    <IonBackButton defaultHref="/login" />
+                </IonButtons>
             </IonToolbar>
         </IonHeader>
         <IonContent>
@@ -85,14 +86,10 @@ const Registro: React.FC = () => {
                     </IonHeader>
                 </IonCol>
                 <IonCol style={{ textAlign:"center" }}>
-                    <IonIcon ios={basketball} md={basketball}
-                        style={{ fontSize: "70px", marginTop: "15%" }}
-                    />
-                    <p>
+                <IonImg className='logo' src={logo} alt="logo" />
                     <IonLabel id='title'>
-                        MyBasket Target
+                        MyTarget
                     </IonLabel>
-                    </p>
                 </IonCol>
             </IonRow>
             <IonCard>

@@ -1,3 +1,7 @@
+.logo{
+  height: 120px;
+}
+
 ion-menu ion-content {
   font-family: var(--ion-font-family, cursive);
   --background: var(--ion-item-background, var(--ion-background-color, #ffc753));
@@ -145,6 +149,6 @@ ion-item.selected {
 } 
 
 .botonLogout{
-  margin-top: 75%;
+  margin-top: 45%;
   color: black;
 }

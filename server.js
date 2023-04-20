@@ -15,6 +15,7 @@ app.use(express.urlencoded({extended: true}));
 
 const port = process.env.PORT || 5000; //Line 3
 
+//Middleware de autenticación para comprobr que cuando realiza las acciones necesarias el token es válido, utiliza next()
 async function auth(req, res, next) {
   const token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : null;
   if (!token) {
@@ -31,7 +32,7 @@ async function auth(req, res, next) {
 
 }
 
-
+//Ruta de POST cuando se va a inciar sesión 
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     // Consulta a la base de datos
@@ -64,6 +65,8 @@ app.post('/login', async (req, res) => {
       res.status(500).send('Error al iniciar sesión'); 
     }
 });
+
+//ruta de POST para crear a un usuario nuevo
 
 app.post('/registro', async (req, res) => {
   const { nombre, apellidos, email, password, equipo, posicion, mano_habil } = req.body;
@@ -109,10 +112,10 @@ app.post('/registro', async (req, res) => {
   }
 });
 
-
+//Ruta GET para obtener el usuario y que se muestre en el perfil los datos
 app.get('/usuario', auth, async (req, res) => {
   const email = req.email;
-  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  //res.header('Access-Control-Allow-Origin', `http://${direccionIP}:3000`);
   res.header('Access-Control-Allow-Credentials', 'true');
   try{
     const connection = await conectarDB();
@@ -128,35 +131,8 @@ app.get('/usuario', auth, async (req, res) => {
     res.status(error.status).json({ message: error.message });
   }
 })
-/*
-  try {
-    
-    // El token es válido y se ha decodificado correctamente
-    console.log(usuario);
-    try {
-      const connection = await conectarDB();
-      const [rows] = await connection.execute('SELECT * FROM usuario WHERE email=?', [usuario.email]);
-     
-      // Si la consulta devuelve resultados, enviamos el usuario
-      if (rows.length > 0) {
-        res.send(rows[0]);
-      } else {
-        res.status(404).send('Usuario no encontrado'); // Si no hay resultados, enviamos un error 404 
-      }
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Error al obtener el usuario'); 
-    }
-  })
-  .catch(error => {
-    // Ha ocurrido un error al decodificar el token
-    console.error(error.message);
-  });
 
-  
-});
-*/
-
+//Ruta PUT para modificar los datos del usuario en el perfil
 app.put('/usuario', auth, async (req, res) => {
   const email = req.email;
   console.log(email);
@@ -183,11 +159,10 @@ app.put('/usuario', auth, async (req, res) => {
   }
 });
 
-
-
+//Ruta GET para obtener todas las sesiones del usuario en la bd
 app.get('/sesiones', auth,  async (req, res) => {
   const email = req.email ;
-  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  //res.header('Access-Control-Allow-Origin', `http://${direccionIP}:3000`);
   res.header('Access-Control-Allow-Credentials', 'true');
  
   try{
@@ -205,9 +180,10 @@ app.get('/sesiones', auth,  async (req, res) => {
   }
 })
 
+//Ruta DELETE para eliminar una sesión concreta
 app.delete('/sesiones/:fecha/:hora', auth, async (req, res) => {
   const email = req.email ;
-  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  //res.header('Access-Control-Allow-Origin', `http://${direccionIP}:3000`);
   res.header('Access-Control-Allow-Credentials', 'true');
 
   const fecha = req.params.fecha;
@@ -224,13 +200,42 @@ app.delete('/sesiones/:fecha/:hora', auth, async (req, res) => {
   
 });
 
+//Ruta GET para obtener los datos de una sesión y sus zonsa de tiro
+app.get('/sesion', auth,  async (req, res) => {
+  const email = req.email ;
+  const fecha = req.query.fecha;
+  const hora = req.query.hora;
+  console.log(fecha);
+  console.log(hora);
+  //res.header('Access-Control-Allow-Origin', `http://${direccionIP}:3000`);
+  res.header('Access-Control-Allow-Credentials', 'true');
+ 
+  try{
+    const connection = await conectarDB();
+    const [rows] = await connection.execute('SELECT * FROM sesion WHERE fecha=? and hora=? and usuario = ?', [fecha, hora, email]);
+
+    const [zonas] = await connection.execute('SELECT * FROM zona WHERE fecha=? and hora=? and usuario = ?', [fecha, hora, email]);
+
+    // Enviamos las sesiones
+    if (rows.length > 0) {
+      res.status(201).send({
+        sesion: rows[0],
+        zonas: zonas
+      });
+    } else {
+      res.status(404).send('Sesion no encontrada'); // Si no hay resultados, enviamos un error 404 
+    }
+    } catch(error){
+    res.status(error.status).json({ message: error.message });
+  }
+})
+
+//Ruta POST para crear una nueva sesión y sus zonas de tiro asociadas
 app.post('/sesion', auth, async (req, res) => {
   const usuario = req.email ;
   const { nombre, fecha, hora, tr1, ta1, tr2, ta2, tr3, ta3, tr4, ta4, tr5, ta5 } = req.body;
   try {
     const connection = await conectarDB();
-
-    
     const [result] = await connection.query('INSERT INTO sesion (nombre, fecha, hora, usuario) VALUES (?, ?, ?, ?)', 
     [ 
       nombre, 
@@ -268,6 +273,51 @@ app.post('/sesion', auth, async (req, res) => {
     console.error(error);
     // Enviamos una respuesta de error 
     res.status(500).send('Error al crear usuario');
+  }
+});
+
+//Ruta PUt para modificar una sesión que ya había sido creada
+app.put('/sesion', auth, async (req, res) => {
+  const email = req.email;
+  console.log(email);
+  try{
+    const { nombre, fecha, hora, tr1, ta1, tr2, ta2, tr3, ta3, tr4, ta4, tr5, ta5 } = req.body;
+    const connection = await conectarDB();
+    const [rows] = await connection.execute(
+      `UPDATE sesion SET nombre = ? WHERE usuario = ? and fecha = ? and hora = ?`,
+      [nombre, email, fecha, hora]
+    );
+
+    const [zona1] = await connection.execute(
+      `UPDATE zona SET tiros_realizados = ? , tiros_anotados = ? WHERE usuario = ? and fecha = ? and hora = ? and posicion = ?`,
+      [tr1, ta1, email, fecha, hora, 1]
+    );
+    const [zona2] = await connection.execute(
+      `UPDATE zona SET tiros_realizados = ? , tiros_anotados = ? WHERE usuario = ? and fecha = ? and hora = ? and posicion = ?`,
+      [tr2, ta2, email, fecha, hora, 2]
+    );
+    const [zona3] = await connection.execute(
+      `UPDATE zona SET tiros_realizados = ? , tiros_anotados = ? WHERE usuario = ? and fecha = ? and hora = ? and posicion = ?`,
+      [tr3, ta3, email, fecha, hora, 3]
+    );
+    const [zona4] = await connection.execute(
+      `UPDATE zona SET tiros_realizados = ? , tiros_anotados = ? WHERE usuario = ? and fecha = ? and hora = ? and posicion = ?`,
+      [tr4, ta4, email, fecha, hora, 4]
+    );
+    const [zona5] = await connection.execute(
+      `UPDATE zona SET tiros_realizados = ? , tiros_anotados = ? WHERE usuario = ? and fecha = ? and hora = ? and posicion = ?`,
+      [tr5, ta5, email, fecha, hora, 5]
+    );
+
+    res.status(200).json({ 
+      mensaje: 'Sesion y zonas actualizada correctamente' , 
+      sesion: {
+        nombre: nombre,
+        zona1: zona1
+      }});
+      
+  } catch(error){
+    res.status(error.status).json({ message: error.message });
   }
 });
 

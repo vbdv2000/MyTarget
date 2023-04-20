@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import './Principal.css';
 import { useHistory } from 'react-router';
 import { useCookies } from 'react-cookie';
-import Menu from '../components/Menu';
+import { direccionIP } from '../../config';
 
 const Perfil: React.FC = () => {
   const history = useHistory();
@@ -35,7 +35,7 @@ const Perfil: React.FC = () => {
 
     try {
       console.log(email);      
-      const response = await axios.put(`http://localhost:5000/usuario`, 
+      const response = await axios.put(`http://${direccionIP}:5000/usuario`, 
       { nombre, apellidos, equipo, posicion, mano_habil}, 
       {
         headers: {
@@ -70,7 +70,7 @@ const Perfil: React.FC = () => {
       
       console.log(token);
       try{
-        const response = await axios.get('http://localhost:5000/usuario', 
+        const response = await axios.get(`http://${direccionIP}:5000/usuario`, 
         {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -109,9 +109,7 @@ const Perfil: React.FC = () => {
             <IonTitle>Mi perfil</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <h2 id="encabezado">
-          Mi perfil
-        </h2>
+        
       
 
         <IonCard>

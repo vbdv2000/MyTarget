@@ -4,9 +4,19 @@ import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonMenuButton, 
 import { FormEvent, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useCookies } from 'react-cookie';
-import { useHistory } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import { direccionIP } from '../../config';
-const CrearSesion: React.FC = () => {
+const ModificarSesion: React.FC = () => {
+
+
+    interface Sesion {
+        fecha: string;
+        hora: string;
+    }
+
+    const { state } = useLocation<Sesion>();
+    const [fecha, setFecha] = useState('');
+    const [hora, setHora] = useState('');
 
     const [cookies, setCookie, removeCookie] = useCookies(['token']);
     const [present] = useIonToast();
@@ -18,10 +28,10 @@ const CrearSesion: React.FC = () => {
     const [form3Visible, setForm3Visible] = useState(false);
     const [form4Visible, setForm4Visible] = useState(false);
     const [form5Visible, setForm5Visible] = useState(false);
-
+    
+    
     const [nombre, setNombre] = useState('');
-    const [fecha, setFecha] = useState('');
-    const [hora, setHora] = useState('');
+    
     const [tr1, settr1] = useState('');
     const [ta1, setta1] = useState('');
     const [tr2, settr2] = useState('');
@@ -78,26 +88,28 @@ const CrearSesion: React.FC = () => {
     }
 
 
+
     const presentToast = () => {
         present({
-          message: "Se ha creado la sesión correctamente",
+          message: "Se ha modificado la sesión correctamente",
           duration: 1500,
           position: "top",
           cssClass: "custom-toast",
         });
       };  
 
-    const crearSesion = async (e: FormEvent<HTMLFormElement>) => {
+    const saveSesion = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const token = cookies.token;
         if(!token ){
-        // Si no hay token, redirigimos a la página de login
-        history.push('/login');
-        return;
+            // Si no hay token, redirigimos a la página de login
+            history.push('/login');
+            return;
         }
         try {
-            const response = await axios.post(`http://${direccionIP}:5000/sesion`, 
-            { nombre, fecha, hora, tr1, ta1, tr2, ta2, tr3, ta3, tr4, ta4, tr5, ta5},
+            const response = await axios.put(`http://${direccionIP}:5000/sesion`, 
+            { 
+                nombre, fecha, hora, tr1, ta1, tr2, ta2, tr3, ta3, tr4, ta4, tr5, ta5},
             {
                 headers: {
                 'Authorization': `Bearer ${token}`
@@ -105,25 +117,67 @@ const CrearSesion: React.FC = () => {
             console.log(response);
             presentToast();
             setTimeout(()=>{}, 2000);
-            window.location.href = '/sesiones';
+            //window.location.href = '/sesiones';
             
             
         } catch (err) {
-            console.log("Error creando la sesion");
+            console.log("Error modificando la sesion");
             setCookie('token','');
             history.push('/login');
         }
-        console.log('Se crea la sesion');
+        console.log('Se modifica la sesion');
     }   
 
     useEffect(() => {
-    const token = cookies.token;
-     
-      if(!token ){
-        // Si no hay token, redirigimos a la página de login
-        window.location.href = '/login';
-        return;
-      }
+        async function llamadaAPI (){
+            const token = cookies.token;
+           
+            if(!token ){
+              // Si no hay token, redirigimos a la página de login
+              history.push('/login');
+              return;
+            }
+            const params = new URLSearchParams(window.location.search);
+            const nuevaFecha = params.get("fecha") ?? ''; //Se hace esto para que compile, si el valor de las params es nulo, el valor es ''
+            const nuevaHora = params.get("hora") ?? '';
+            setFecha(nuevaFecha);
+            setHora(nuevaHora);
+            try {
+                const response = await axios.get(`http://${direccionIP}:5000/sesion`, 
+                {
+                    params: {
+                        fecha: nuevaFecha,
+                        hora: nuevaHora
+                    },
+                    headers: {
+                    'Authorization': `Bearer ${token}`
+                    }
+                });
+                console.log(response.data)
+                const sesion = response.data;
+                
+                setNombre(sesion.sesion.nombre);
+                console.log(fecha);
+                settr1(sesion.zonas[0].tiros_realizados);
+                setta1(sesion.zonas[0].tiros_anotados);
+                settr2(sesion.zonas[1].tiros_realizados);
+                setta2(sesion.zonas[1].tiros_anotados);
+                settr3(sesion.zonas[2].tiros_realizados);
+                setta3(sesion.zonas[2].tiros_anotados);
+                settr4(sesion.zonas[3].tiros_realizados);
+                setta4(sesion.zonas[3].tiros_anotados);
+                settr5(sesion.zonas[4].tiros_realizados);
+                setta5(sesion.zonas[4].tiros_anotados);
+                
+            }  catch (error) {
+            setCookie('token','');
+            history.push('/login');
+            console.log("Algo ha ido mal obteniendo la sesion");
+            }
+            
+        };
+      
+        llamadaAPI();
     }, []);
 
 
@@ -134,28 +188,28 @@ const CrearSesion: React.FC = () => {
                 <IonHeader>
                 <IonToolbar>
                     <IonButtons slot="start">
-                        <IonMenuButton />
+                    <IonMenuButton />
                     </IonButtons>
-                    <IonTitle>Crear sesión</IonTitle>
+                    <IonTitle>Modificar sesión de tiro</IonTitle>
                 </IonToolbar>
                 </IonHeader>
                 
-                <form onSubmit={crearSesion}>
+                <form onSubmit={saveSesion}>
                 <IonCard>
 
                     <IonItem>
                         <IonLabel position="floating">Nombre</IonLabel>
                         <IonInput type="text" value={nombre} onIonChange={e => setNombre(e.detail.value!)} required></IonInput>
                     </IonItem>
-
+                    
                     <IonItem>
                         <IonLabel position="floating">Fecha</IonLabel>
-                        <IonInput placeholder='Fecha' type="date" value={fecha} onIonChange={e => setFecha(e.detail.value!)} required></IonInput>
+                        <IonInput placeholder='Fecha' type="date"  value={fecha} onIonChange={e => setFecha(e.detail.value!)} readonly required></IonInput>
                     </IonItem>
 
                     <IonItem>
                         <IonLabel position="floating">Hora</IonLabel>
-                        <IonInput placeholder='Hora' type="time" value={hora} onIonChange={e => setHora(e.detail.value!)} required></IonInput>
+                        <IonInput placeholder='Hora' type="time" value={hora} onIonChange={e => setHora(e.detail.value!)} readonly required></IonInput>
                     </IonItem>
                 </IonCard>
                 <IonImg className='cancha' src={cancha} alt="cancha" />
@@ -281,7 +335,7 @@ const CrearSesion: React.FC = () => {
                         </IonItem>
                     </div>
                 )}
-                <IonButton shape="round" color={'success'} className='boton_crearSesion' type='submit' expand='full'>Crear sesión</IonButton>
+                <IonButton shape="round" color={'success'} className='boton_crearSesion' type='submit' expand='full'>Guardar sesión</IonButton>
                 </form>
                 
             </IonContent>
@@ -290,5 +344,5 @@ const CrearSesion: React.FC = () => {
     );
 };
 
-export default CrearSesion;
+export default ModificarSesion;
 

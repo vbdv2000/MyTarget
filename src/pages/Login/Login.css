@@ -7,9 +7,13 @@ ion-content {
     margin-left:10%;
     margin-top:30px;
     font-size: 30px;
-    font-family: cursive;
+    font-family: Arial;
 }
 
+.logo{
+    margin-top: 20px;
+    height: 130px;
+}
 
 .links{
     border-bottom: 2px solid blue;
@@ -23,13 +27,14 @@ ion-content {
 
 #title{
     font-size: 20px;
+    font-family:Arial;
 }
 
 #registrate{
     margin-left:10%;
     margin-top:60px;
     font-size: 30px;
-    font-family: cursive;
+    font-family: Arial;
 }
 
 ion-select.ios{
@@ -51,7 +56,7 @@ ion-select.md{
     margin-left:10%;
     margin-top:30px;
     font-size: 28px;
-    font-family: cursive;
+    font-family: Arial;
 }
 
 

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonButton, IonItem, IonLabel, IonText, IonIcon, IonCard, IonFooter, IonGrid, IonCol, IonRow, IonButtons, IonBackButton, useIonToast } from '@ionic/react';
-import { basketball, timer } from 'ionicons/icons';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonButton, IonItem, IonLabel, IonText, IonIcon, IonCard, IonFooter, IonGrid, IonCol, IonRow, IonButtons, IonBackButton, useIonToast, IonImg } from '@ionic/react';
 import './Login.css';
 import axios from 'axios';
 import { useHistory } from 'react-router';
 import { useCookies } from 'react-cookie';
+import { direccionIP } from '../../../config';
+import logo from '../../../public/assets/icono-negro-sin-fondo.png';
 
 
 
@@ -31,7 +32,7 @@ const LoginPage = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:5000/login', { email, password });
+      const response = await axios.post(`http://${direccionIP}:5000/login`, { email, password });
       var token = response.data.token;
       //localStorage.setItem('token', token);
       console.log(response);
@@ -68,16 +69,14 @@ const LoginPage = () => {
       <IonContent>
         <IonRow>
           <IonCol style={{ textAlign:"center" }}>
-            <IonIcon ios={basketball} md={basketball}
-                style={{ fontSize: "70px", marginTop: "15%" }}
-              />
+          <IonImg className='logo' src={logo} alt="logo" />
           </IonCol>
         </IonRow>
 
         <IonRow>
           <IonCol style={{ textAlign:"center" }}>
             <IonLabel id='title'>
-              MyBasket Target
+              MyTarget
             </IonLabel>
           </IonCol>
         </IonRow>

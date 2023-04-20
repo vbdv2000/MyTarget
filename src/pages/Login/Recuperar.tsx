@@ -1,7 +1,9 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonButton, IonCol, IonIcon, IonLabel, IonRow, IonCard, IonItem, IonBackButton, IonButtons, useIonToast } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonButton, IonCol, IonIcon, IonLabel, IonRow, IonCard, IonItem, IonBackButton, IonButtons, useIonToast, IonImg } from '@ionic/react';
 import { basketball } from 'ionicons/icons';
 import React, { useState } from 'react';
 import './Login.css';
+import logo from '../../../public/assets/icono-negro-sin-fondo.png';
+
 
 const Recuperar: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -39,16 +41,15 @@ const Recuperar: React.FC = () => {
       <IonContent>
         <IonRow>
           <IonCol style={{ textAlign:"center" }}>
-            <IonIcon ios={basketball} md={basketball}
-                style={{ fontSize: "70px", marginTop: "15%" }}
-              />
+          <IonImg className='logo' src={logo} alt="logo" />
+
           </IonCol>
         </IonRow>
 
         <IonRow>
           <IonCol style={{ textAlign:"center" }}>
             <IonLabel id='title'>
-              MyBasket Target
+              MyTarget
             </IonLabel>
           </IonCol>
         </IonRow>

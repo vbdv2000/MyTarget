@@ -6,6 +6,7 @@ import { useCookies } from 'react-cookie';
 import { useHistory } from 'react-router';
 import { addCircleOutline, createOutline, trash } from "ionicons/icons";
 import './Principal.css';
+import { direccionIP } from "../../config";
 
 
 
@@ -43,7 +44,7 @@ const Sesiones: React.FC = () => {
       }
       
       console.log(token);
-      axios.get(`http://localhost:5000/sesiones`,{
+      axios.get(`http://${direccionIP}:5000/sesiones`,{
         headers: {
           'Authorization': `Bearer ${token}`
         }})
@@ -76,7 +77,15 @@ const Sesiones: React.FC = () => {
     //window.location.href= '/crearSesion';
   }
 
-  const editarSesion = (fecha: String, hora: String) => {
+  const editarSesion = (fecha: string, hora: string) => {
+    const fechaHora = {
+      fecha: fecha,
+      hora: hora
+    };
+    const query = new URLSearchParams(fechaHora).toString();
+    
+    window.location.href = `/modificarSesion?${query}`;
+    //history.push('/modificarSesion', {fecha, hora});
   }
 
   const eliminarSesion = async (fecha: String, hora: String) => {
@@ -90,7 +99,7 @@ const Sesiones: React.FC = () => {
     console.log(token);
     try{  
       const response = await axios.delete(
-        `http://localhost:5000/sesiones/${fecha}/${hora}`,{
+        `http://${direccionIP}:5000/sesiones/${fecha}/${hora}`,{
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -117,14 +126,12 @@ const Sesiones: React.FC = () => {
             <IonButtons slot="start">
               <IonMenuButton />
             </IonButtons>
-            <IonTitle>Sesiones</IonTitle>
+            <IonTitle>Sesiones de tiro</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <h2 id="encabezado">
-          Sesiones de tiro
-        </h2>
+        
 
-        <IonButton color={"success"} onClick={crearSesion}>
+        <IonButton className="botonCrear" color={"success"} onClick={crearSesion}>
         <IonIcon slot="start" icon={addCircleOutline}></IonIcon>
           Crear una sesión
         </IonButton>
