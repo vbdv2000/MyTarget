@@ -1,6 +1,6 @@
 import './Principal.css';
 import cancha from '../../public/assets/cancha.jpeg';
-import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonButton, IonImg, IonInput, IonItem, IonLabel, IonCard, useIonToast } from '@ionic/react';
+import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonButton, IonImg, IonInput, IonItem, IonLabel, IonCard, useIonToast, IonDatetime, IonDatetimeButton } from '@ionic/react';
 import { FormEvent, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useCookies } from 'react-cookie';
@@ -118,7 +118,7 @@ const CrearSesion: React.FC = () => {
 
     useEffect(() => {
     const token = cookies.token;
-     
+    
       if(!token ){
         // Si no hay token, redirigimos a la página de login
         window.location.href = '/login';
@@ -158,28 +158,29 @@ const CrearSesion: React.FC = () => {
                         <IonInput placeholder='Hora' type="time" value={hora} onIonChange={e => setHora(e.detail.value!)} required></IonInput>
                     </IonItem>
                 </IonCard>
-                <IonImg className='cancha' src={cancha} alt="cancha" />
-                
-                <div style={{ position: "absolute", left: "7%", top: "34%", transform: "translate(-50%, 45%)"}}>
-                    <IonButton size='small' fill="outline" shape="round" color={"danger"} onClick={zona1}>1</IonButton>
-                </div>
-                
-                <div style={{ position: "absolute", left: "14%", top: "58%", transform: "translate(-50%, -50%)" }}>
-                    <IonButton fill="outline" shape="round" color={"danger"} onClick={zona2}>2</IonButton>
-                </div>
-                
-                <div style={{ position: "absolute", left: "47%", top: "64%", transform: "translate(-50%, -50%)", textAlign: "center" }}>
-                    <IonButton fill="outline" shape="round" color={"danger"} onClick={zona3}>3</IonButton>
-                </div>
+                <div style={{position: 'relative'}}>
+                    <IonImg className='cancha' src={cancha} alt="cancha" />
+                    
+                    <div style={{ position: "absolute", left: "7%", top: "3%", transform: "translate(-50%, 45%)"}}>
+                        <IonButton size='small' fill="outline" shape="round" color={"danger"} onClick={zona1}>{ta1} / {tr1}</IonButton>
+                    </div>
+                    
+                    <div style={{ position: "absolute", left: "13%", top: "73%", transform: "translate(-50%, -50%)" }}>
+                        <IonButton fill="outline" shape="round" color={"danger"} onClick={zona2}>{ta2} / {tr2}</IonButton>
+                    </div>
+                    
+                    <div style={{ position: "absolute", left: "48%", top: "93%", transform: "translate(-50%, -50%)", textAlign: "center" }}>
+                        <IonButton fill="outline" shape="round" color={"danger"} onClick={zona3}>{ta3} / {tr3}</IonButton>
+                    </div>
 
-                <div style={{ position: "absolute", left: "83%", top: "58%", transform: "translate(-50%, -50%)", textAlign: "center" }}>
-                    <IonButton fill="outline" shape="round" color={"danger"} onClick={zona4}>4</IonButton>
-                </div>
+                    <div style={{ position: "absolute", left: "82%", top: "73%", transform: "translate(-50%, -50%)", textAlign: "center" }}>
+                        <IonButton fill="outline" shape="round" color={"danger"} onClick={zona4}>{ta4} / {tr4}</IonButton>
+                    </div>
 
-                <div style={{ position: "absolute", left: "89%", top: "34%", transform: "translate(-50%, 50%)", textAlign: "center" }}>
-                    <IonButton size='small' fill="outline" shape="round" color={"danger"} onClick={zona5}>5</IonButton>
+                    <div style={{ position: "absolute", left: "89%", top: "3%", transform: "translate(-50%, 50%)", textAlign: "center" }}>
+                        <IonButton size='small' fill="outline" shape="round" color={"danger"} onClick={zona5}>{ta5} / {tr5}</IonButton>
+                    </div>
                 </div>
-                
                 {form1Visible && (
                     <div>
                         

@@ -65,10 +65,17 @@ const Sesiones: React.FC = () => {
             console.log("No se encontraron sesiones")
           }
         })
-        .catch(error => {
-          console.log(error)
-        });
-    };
+      .catch((error) => {
+        if (error.response && error.response.status === 404) {
+          console.log("ERROR: no hay sesiones");
+        } else {
+          console.log("Ha habido un error inesperado");
+          setCookie('token','');
+          history.push('/login');
+        }
+      });
+    
+    }
     obtenerSesiones();
   }, []);
 

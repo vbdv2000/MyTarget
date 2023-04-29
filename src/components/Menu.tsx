@@ -20,7 +20,6 @@ import {
 } from '@ionic/react';
 
 import logo from '../../public/assets/icono-negro-sin-fondo.png';
-
 import { useHistory, useLocation } from 'react-router-dom';
 import { homeSharp, statsChartSharp, basketballSharp, personSharp, basketball, logOutSharp } from 'ionicons/icons';
 import './Menu.css';
@@ -46,7 +45,7 @@ const appPages: AppPage[] = [
   },
   {
     title: 'Estadísticas',
-    url: '/page/Stats',
+    url: '/estadisticas',
     iosIcon: statsChartSharp,
     mdIcon: statsChartSharp
   },
@@ -100,7 +99,7 @@ const Menu: React.FC = () => {
         const posicionMayuscula = usuario.posicion.charAt(0).toUpperCase() + usuario.posicion.slice(1);
         setPosicion(posicionMayuscula);
       }  catch (error) {
-        removeCookie(token);
+        setCookie('token','');
         console.log("Algo ha ido mal obteniendo datos del usuario");
         history.push('/login');
       }
@@ -130,9 +129,7 @@ const Menu: React.FC = () => {
       <IonContent> 
         <IonRow>
           <IonCol style={{ textAlign:"center" }}>
-            <IonImg className='logo' src={logo} alt="logo" />
-            
-            
+            <IonImg className="logoMenu" src={logo} alt="logo" />
             <IonLabel id='title'>
                 MyTarget
             </IonLabel>
@@ -153,6 +150,7 @@ const Menu: React.FC = () => {
           {appPages.map((appPage, index) => {
             return (
               <IonMenuToggle key={index} autoHide={false}>
+                
                 <IonItem className={location.pathname === appPage.url ? 'selected' : ''} routerLink={appPage.url} routerDirection="none" lines="none" detail={false}>
                   <IonIcon aria-hidden="true" slot="start" ios={appPage.iosIcon} md={appPage.mdIcon} />
                   <IonLabel>{appPage.title}</IonLabel>

@@ -247,10 +247,11 @@ app.post('/sesion', auth, async (req, res) => {
     for (let index = 1; index <= 5; index++) {
       tiros_realizados=eval("tr"+index);
       tiros_anotados=eval("ta"+index);
-      tiros_realizados === '' ? 0 : tiros_realizados,
-      tiros_anotados === '' ? 0 : tiros_anotados, 
-        console.log(tiros_realizados);
-        console.log(tiros_anotados);
+      tiros_realizados === '' ? 0 : tiros_realizados;
+      tiros_anotados === '' ? 0 : tiros_anotados;
+      
+      console.log(tiros_realizados);
+      console.log(tiros_anotados);
       const [result2] = await connection.query('INSERT INTO zona (posicion, tiros_realizados, tiros_anotados, fecha, hora, usuario) VALUES(?, ?, ?, ?, ?, ?)', 
       [ 
         index, 

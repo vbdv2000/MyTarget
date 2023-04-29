@@ -8,13 +8,6 @@ import { useHistory, useLocation } from 'react-router';
 import { direccionIP } from '../../config';
 const ModificarSesion: React.FC = () => {
 
-
-    interface Sesion {
-        fecha: string;
-        hora: string;
-    }
-
-    const { state } = useLocation<Sesion>();
     const [fecha, setFecha] = useState('');
     const [hora, setHora] = useState('');
 
@@ -212,28 +205,29 @@ const ModificarSesion: React.FC = () => {
                         <IonInput placeholder='Hora' type="time" value={hora} onIonChange={e => setHora(e.detail.value!)} readonly required></IonInput>
                     </IonItem>
                 </IonCard>
-                <IonImg className='cancha' src={cancha} alt="cancha" />
-                
-                <div style={{ position: "absolute", left: "7%", top: "34%", transform: "translate(-50%, 45%)"}}>
-                    <IonButton size='small' fill="outline" shape="round" color={"danger"} onClick={zona1}>1</IonButton>
-                </div>
-                
-                <div style={{ position: "absolute", left: "14%", top: "58%", transform: "translate(-50%, -50%)" }}>
-                    <IonButton fill="outline" shape="round" color={"danger"} onClick={zona2}>2</IonButton>
-                </div>
-                
-                <div style={{ position: "absolute", left: "47%", top: "64%", transform: "translate(-50%, -50%)", textAlign: "center" }}>
-                    <IonButton fill="outline" shape="round" color={"danger"} onClick={zona3}>3</IonButton>
-                </div>
+                <div style={{position: 'relative'}}>
+                    <IonImg className='cancha' src={cancha} alt="cancha" />
+                    
+                    <div style={{ position: "absolute", left: "7%", top: "3%", transform: "translate(-50%, 45%)"}}>
+                        <IonButton size='small' fill="outline" shape="round" color={"danger"} onClick={zona1}>{ta1} / {tr1}</IonButton>
+                    </div>
+                    
+                    <div style={{ position: "absolute", left: "13%", top: "73%", transform: "translate(-50%, -50%)" }}>
+                        <IonButton fill="outline" shape="round" color={"danger"} onClick={zona2}>{ta2} / {tr2}</IonButton>
+                    </div>
+                    
+                    <div style={{ position: "absolute", left: "48%", top: "93%", transform: "translate(-50%, -50%)", textAlign: "center" }}>
+                        <IonButton fill="outline" shape="round" color={"danger"} onClick={zona3}>{ta3} / {tr3}</IonButton>
+                    </div>
 
-                <div style={{ position: "absolute", left: "83%", top: "58%", transform: "translate(-50%, -50%)", textAlign: "center" }}>
-                    <IonButton fill="outline" shape="round" color={"danger"} onClick={zona4}>4</IonButton>
-                </div>
+                    <div style={{ position: "absolute", left: "82%", top: "73%", transform: "translate(-50%, -50%)", textAlign: "center" }}>
+                        <IonButton fill="outline" shape="round" color={"danger"} onClick={zona4}>{ta4} / {tr4}</IonButton>
+                    </div>
 
-                <div style={{ position: "absolute", left: "89%", top: "34%", transform: "translate(-50%, 50%)", textAlign: "center" }}>
-                    <IonButton size='small' fill="outline" shape="round" color={"danger"} onClick={zona5}>5</IonButton>
+                    <div style={{ position: "absolute", left: "89%", top: "3%", transform: "translate(-50%, 50%)", textAlign: "center" }}>
+                        <IonButton size='small' fill="outline" shape="round" color={"danger"} onClick={zona5}>{ta5} / {tr5}</IonButton>
+                    </div>
                 </div>
-                
                 {form1Visible && (
                     <div>
                         
