@@ -1,6 +1,7 @@
-# MyBasketTarget
-Desarrollo de la aplicación "MyBasket Target" para el TFG de Ingeniería Informática
+# MyTarget
+Desarrollo de la aplicación "MyTarget" para el TFG de Ingeniería Informática
 
-Primero lanzamos el servidor que tiene la API en el puerto 5000 que se conecta a la base de datos con: `node ./server.js`
-<br>
-Para ejecutar la aplicación en local ejecutamos el comando: `npm start`
+Para poder ejecutar en local nuestra aplicación:
+1. Ejecutamos en XAMPP el servidor de Apache y el servidor de base de datos MySQL.
+2. Lanzamos el servidor que tiene la API en el puerto 5000 que se conecta a la base de datos con el comando: `node ./server.js`
+3. Para ejecutar la aplicación en local ejecutamos el comando: `npm start`
