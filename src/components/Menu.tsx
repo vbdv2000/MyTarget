@@ -75,7 +75,7 @@ const Menu: React.FC = () => {
   
   const token = cookies.token;
   useEffect(() => {
-    async function llamadaAPI (){
+    async function cargarMenu (){
       const token = cookies.token;
       if(!token ){
         // Si no hay token, redirigimos a la página de login
@@ -105,7 +105,7 @@ const Menu: React.FC = () => {
       }
     };
 
-    llamadaAPI();
+    cargarMenu();
   }, []);
 
   const cerrarSesion = async () => {

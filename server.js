@@ -60,6 +60,8 @@ app.post('/login', async (req, res) => {
           // Si no hay resultados, enviamos un error de autenticación 
           res.status(401).json({ error: 'El email introducido no está registrado' });
         }
+        connection.end();
+
     } catch (error) {
       console.error(error);
       res.status(500).send('Error al iniciar sesión'); 
@@ -104,6 +106,8 @@ app.post('/registro', async (req, res) => {
         error: 'Registro no válido',
         description: 'Email ya registrado en nuestra base de datos'
     });
+    connection.end();
+
     }
   } catch (error) {
     console.error(error);
@@ -127,6 +131,8 @@ app.get('/usuario', auth, async (req, res) => {
     } else {
       res.status(404).send('Usuario no encontrado'); // Si no hay resultados, enviamos un error 404 
     }
+    connection.end();
+
     } catch(error){
     res.status(error.status).json({ message: error.message });
   }
@@ -152,8 +158,10 @@ app.put('/usuario', auth, async (req, res) => {
         equipo: equipo,
         posicion: posicion,
         mano_habil: mano_habil
-      }});
-      
+      }
+    });
+    connection.end();
+
   } catch(error){
     res.status(error.status).json({ message: error.message });
   }
@@ -167,14 +175,16 @@ app.get('/sesiones', auth,  async (req, res) => {
  
   try{
     const connection = await conectarDB();
-    const [rows] = await connection.execute('SELECT * FROM sesion WHERE usuario = ? ORDER BY fecha DESC', [email]);
+    const [rows] = await connection.execute('SELECT * FROM sesion WHERE usuario = ? ORDER BY fecha ASC', [email]);
 
     // Enviamos las sesiones
     if (rows.length > 0) {
       res.status(201).json({sesiones: rows});
     } else {
       res.status(404).send('Sesiones no encontradas'); // Si no hay resultados, enviamos un error 404 
-    }
+    }       
+    connection.end();
+
     } catch(error){
     res.status(error.status).json({ message: error.message });
   }
@@ -193,6 +203,7 @@ app.delete('/sesiones/:fecha/:hora', auth, async (req, res) => {
     const [rows] = await connection.execute('DELETE FROM sesion WHERE fecha=? and hora=? and usuario=?', [fecha, hora, email]);
     res.status(201).json({mensaje: "La sesion se ha eliminado correctamente"});
     
+    connection.end();
   } catch (error) {
     console.log(error);
     res.status(500).send(error.message);
@@ -225,6 +236,7 @@ app.get('/sesion', auth,  async (req, res) => {
     } else {
       res.status(404).send('Sesion no encontrada'); // Si no hay resultados, enviamos un error 404 
     }
+    connection.end();
     } catch(error){
     res.status(error.status).json({ message: error.message });
   }
@@ -233,7 +245,7 @@ app.get('/sesion', auth,  async (req, res) => {
 //Ruta POST para crear una nueva sesión y sus zonas de tiro asociadas
 app.post('/sesion', auth, async (req, res) => {
   const usuario = req.email ;
-  const { nombre, fecha, hora, tr1, ta1, tr2, ta2, tr3, ta3, tr4, ta4, tr5, ta5 } = req.body;
+  const { nombre, fecha, hora, tr1, ta1, tr2, ta2, tr3, ta3, tr4, ta4, tr5, ta5, tr6, ta6, tr7, ta7, tr8, ta8, tr9, ta9, tr10, ta10 } = req.body;
   try {
     const connection = await conectarDB();
     const [result] = await connection.query('INSERT INTO sesion (nombre, fecha, hora, usuario) VALUES (?, ?, ?, ?)', 
@@ -244,7 +256,7 @@ app.post('/sesion', auth, async (req, res) => {
       usuario
     ]);  
     //Bucle para crear las zonas de la sesion y que se haga una transacción
-    for (let index = 1; index <= 5; index++) {
+    for (let index = 1; index <= 10; index++) {
       tiros_realizados=eval("tr"+index);
       tiros_anotados=eval("ta"+index);
       tiros_realizados === '' ? 0 : tiros_realizados;
@@ -270,6 +282,9 @@ app.post('/sesion', auth, async (req, res) => {
       mensaje: 'Sesión y zonas creadas con éxito',
       usuario: usuario
     });
+
+    connection.end();
+
   } catch (error) {
     console.error(error);
     // Enviamos una respuesta de error 
@@ -282,7 +297,7 @@ app.put('/sesion', auth, async (req, res) => {
   const email = req.email;
   console.log(email);
   try{
-    const { nombre, fecha, hora, tr1, ta1, tr2, ta2, tr3, ta3, tr4, ta4, tr5, ta5 } = req.body;
+    const { nombre, fecha, hora, tr1, ta1, tr2, ta2, tr3, ta3, tr4, ta4, tr5, ta5, tr6, ta6, tr7, ta7, tr8, ta8, tr9, ta9, tr10, ta10 } = req.body;
     const connection = await conectarDB();
     const [rows] = await connection.execute(
       `UPDATE sesion SET nombre = ? WHERE usuario = ? and fecha = ? and hora = ?`,
@@ -310,13 +325,36 @@ app.put('/sesion', auth, async (req, res) => {
       [tr5, ta5, email, fecha, hora, 5]
     );
 
+    const [zona6] = await connection.execute(
+      `UPDATE zona SET tiros_realizados = ? , tiros_anotados = ? WHERE usuario = ? and fecha = ? and hora = ? and posicion = ?`,
+      [tr6, ta6, email, fecha, hora, 6]
+    );
+    const [zona7] = await connection.execute(
+      `UPDATE zona SET tiros_realizados = ? , tiros_anotados = ? WHERE usuario = ? and fecha = ? and hora = ? and posicion = ?`,
+      [tr7, ta7, email, fecha, hora, 7]
+    );
+    const [zona8] = await connection.execute(
+      `UPDATE zona SET tiros_realizados = ? , tiros_anotados = ? WHERE usuario = ? and fecha = ? and hora = ? and posicion = ?`,
+      [tr8, ta8, email, fecha, hora, 8]
+    );
+    const [zona9] = await connection.execute(
+      `UPDATE zona SET tiros_realizados = ? , tiros_anotados = ? WHERE usuario = ? and fecha = ? and hora = ? and posicion = ?`,
+      [tr9, ta9, email, fecha, hora, 9]
+    );
+    const [zona10] = await connection.execute(
+      `UPDATE zona SET tiros_realizados = ? , tiros_anotados = ? WHERE usuario = ? and fecha = ? and hora = ? and posicion = ?`,
+      [tr10, ta10, email, fecha, hora, 10]
+    );
+
     res.status(200).json({ 
       mensaje: 'Sesion y zonas actualizada correctamente' , 
       sesion: {
         nombre: nombre,
-        zona1: zona1
-      }});
-      
+        zona1: [zona1, zona2, zona3, zona4, zona5, zona6, zona7, zona8, zona9, zona10]
+      }
+    });
+
+    connection.end();
   } catch(error){
     res.status(error.status).json({ message: error.message });
   }

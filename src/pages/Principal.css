@@ -106,5 +106,19 @@ ion-grid ion-button {
     margin-top: 20px;
 }
   
-  
+.rojo {
+    --background: #ffb6b6;
+    --progress-background: #ff0000;
+}
+
+.amarillo {
+    --background: #ffeab6;
+    --progress-background: #ffc800;
+}
+
+.verde {
+    --background: #c4ffbd;
+    --progress-background: #0dff00;
+}
+
  

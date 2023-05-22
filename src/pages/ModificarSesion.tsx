@@ -21,6 +21,11 @@ const ModificarSesion: React.FC = () => {
     const [form3Visible, setForm3Visible] = useState(false);
     const [form4Visible, setForm4Visible] = useState(false);
     const [form5Visible, setForm5Visible] = useState(false);
+    const [form6Visible, setForm6Visible] = useState(false);
+    const [form7Visible, setForm7Visible] = useState(false);
+    const [form8Visible, setForm8Visible] = useState(false);
+    const [form9Visible, setForm9Visible] = useState(false);
+    const [form10Visible, setForm10Visible] = useState(false);
     
     
     const [nombre, setNombre] = useState('');
@@ -35,6 +40,16 @@ const ModificarSesion: React.FC = () => {
     const [ta4, setta4] = useState('');
     const [tr5, settr5] = useState('');
     const [ta5, setta5] = useState('');
+    const [tr6, settr6] = useState('');
+    const [ta6, setta6] = useState('');
+    const [tr7, settr7] = useState('');
+    const [ta7, setta7] = useState('');
+    const [tr8, settr8] = useState('');
+    const [ta8, setta8] = useState('');
+    const [tr9, settr9] = useState('');
+    const [ta9, setta9] = useState('');
+    const [tr10, settr10] = useState('');
+    const [ta10, setta10] = useState('');
 
    
     const zona1 = () => {
@@ -43,7 +58,12 @@ const ModificarSesion: React.FC = () => {
         setForm3Visible(false);
         setForm4Visible(false);
         setForm5Visible(false);
-        console.log('Se hizo clic en el área de la zona1');
+        setForm6Visible(false);
+        setForm7Visible(false);
+        setForm8Visible(false);
+        setForm9Visible(false);
+        setForm10Visible(false);
+        console.log('Se hizo clic en el área de la zona 1');
     }
 
     const zona2 = () => {
@@ -52,7 +72,12 @@ const ModificarSesion: React.FC = () => {
         setForm3Visible(false);
         setForm4Visible(false);
         setForm5Visible(false);
-        console.log('Se hizo clic en el área de la zona2');
+        setForm6Visible(false);
+        setForm7Visible(false);
+        setForm8Visible(false);
+        setForm9Visible(false);
+        setForm10Visible(false);
+        console.log('Se hizo clic en el área de la zona 2');
     }
 
     const zona3 = () => {
@@ -61,7 +86,12 @@ const ModificarSesion: React.FC = () => {
         setForm2Visible(false);
         setForm4Visible(false);
         setForm5Visible(false);
-        console.log('Se hizo clic en el área de la zona3');
+        setForm6Visible(false);
+        setForm7Visible(false);
+        setForm8Visible(false);
+        setForm9Visible(false);
+        setForm10Visible(false);
+        console.log('Se hizo clic en el área de la zona 3');
     }
     const zona4 = () => {
         setForm4Visible(true);
@@ -69,7 +99,12 @@ const ModificarSesion: React.FC = () => {
         setForm2Visible(false);
         setForm3Visible(false);
         setForm5Visible(false);
-        console.log('Se hizo clic en el área de la zona3');
+        setForm6Visible(false);
+        setForm7Visible(false);
+        setForm8Visible(false);
+        setForm9Visible(false);
+        setForm10Visible(false);
+        console.log('Se hizo clic en el área de la zona 4');
     }
     const zona5 = () => {
         setForm5Visible(true);
@@ -77,7 +112,77 @@ const ModificarSesion: React.FC = () => {
         setForm2Visible(false);
         setForm3Visible(false);
         setForm4Visible(false);
-        console.log('Se hizo clic en el área de la zona3');
+        setForm6Visible(false);
+        setForm7Visible(false);
+        setForm8Visible(false);
+        setForm9Visible(false);
+        setForm10Visible(false);
+        console.log('Se hizo clic en el área de la zona 5');
+    }
+    const zona6 = () => {
+        setForm6Visible(true);
+        setForm1Visible(false);
+        setForm2Visible(false);
+        setForm3Visible(false);
+        setForm4Visible(false);
+        setForm5Visible(false);
+        setForm7Visible(false);
+        setForm8Visible(false);
+        setForm9Visible(false);
+        setForm10Visible(false);
+        console.log('Se hizo clic en el área de la zona 6');
+    }
+    const zona7 = () => {
+        setForm7Visible(true);
+        setForm1Visible(false);
+        setForm2Visible(false);
+        setForm3Visible(false);
+        setForm4Visible(false);
+        setForm5Visible(false);
+        setForm6Visible(false);
+        setForm8Visible(false);
+        setForm9Visible(false);
+        setForm10Visible(false);
+        console.log('Se hizo clic en el área de la zona 7');
+    }
+    const zona8 = () => {
+        setForm8Visible(true);
+        setForm1Visible(false);
+        setForm2Visible(false);
+        setForm3Visible(false);
+        setForm4Visible(false);
+        setForm5Visible(false);
+        setForm6Visible(false);
+        setForm7Visible(false);
+        setForm9Visible(false);
+        setForm10Visible(false);
+        console.log('Se hizo clic en el área de la zona 8');
+    }
+    const zona9 = () => {
+        setForm9Visible(true);
+        setForm1Visible(false);
+        setForm2Visible(false);
+        setForm3Visible(false);
+        setForm4Visible(false);
+        setForm5Visible(false);
+        setForm6Visible(false);
+        setForm7Visible(false);
+        setForm8Visible(false);
+        setForm10Visible(false);
+        console.log('Se hizo clic en el área de la zona 9');
+    }
+    const zona10 = () => {
+        setForm10Visible(true);
+        setForm1Visible(false);
+        setForm2Visible(false);
+        setForm3Visible(false);
+        setForm4Visible(false);
+        setForm5Visible(false);
+        setForm6Visible(false);
+        setForm7Visible(false);
+        setForm8Visible(false);
+        setForm9Visible(false);
+        console.log('Se hizo clic en el área de la zona 10');
     }
 
 
@@ -102,7 +207,7 @@ const ModificarSesion: React.FC = () => {
         try {
             const response = await axios.put(`http://${direccionIP}:5000/sesion`, 
             { 
-                nombre, fecha, hora, tr1, ta1, tr2, ta2, tr3, ta3, tr4, ta4, tr5, ta5},
+                nombre, fecha, hora, tr1, ta1, tr2, ta2, tr3, ta3, tr4, ta4, tr5, ta5, tr6, ta6, tr7, ta7, tr8, ta8, tr9, ta9, tr10, ta10},
             {
                 headers: {
                 'Authorization': `Bearer ${token}`
@@ -110,7 +215,7 @@ const ModificarSesion: React.FC = () => {
             console.log(response);
             presentToast();
             setTimeout(()=>{}, 2000);
-            //window.location.href = '/sesiones';
+            window.location.href = '/sesiones';
             
             
         } catch (err) {
@@ -161,6 +266,17 @@ const ModificarSesion: React.FC = () => {
                 setta4(sesion.zonas[3].tiros_anotados);
                 settr5(sesion.zonas[4].tiros_realizados);
                 setta5(sesion.zonas[4].tiros_anotados);
+                
+                settr6(sesion.zonas[5].tiros_realizados);
+                setta6(sesion.zonas[5].tiros_anotados);
+                settr7(sesion.zonas[6].tiros_realizados);
+                setta7(sesion.zonas[6].tiros_anotados);
+                settr8(sesion.zonas[7].tiros_realizados);
+                setta8(sesion.zonas[7].tiros_anotados);
+                settr9(sesion.zonas[8].tiros_realizados);
+                setta9(sesion.zonas[8].tiros_anotados);
+                settr10(sesion.zonas[9].tiros_realizados);
+                setta10(sesion.zonas[9].tiros_anotados);
                 
             }  catch (error) {
             setCookie('token','');
@@ -226,6 +342,27 @@ const ModificarSesion: React.FC = () => {
 
                     <div style={{ position: "absolute", left: "89%", top: "3%", transform: "translate(-50%, 50%)", textAlign: "center" }}>
                         <IonButton size='small' fill="outline" shape="round" color={"danger"} onClick={zona5}>{ta5} / {tr5}</IonButton>
+                    </div>
+
+
+                    <div style={{ position: "absolute", left: "30%", top: "3%", transform: "translate(-50%, 45%)"}}>
+                        <IonButton size='small' fill="outline" shape="round" color={"danger"} onClick={zona6}>{ta6} / {tr6}</IonButton>
+                    </div>
+                    
+                    <div style={{ position: "absolute", left: "30%", top: "60%", transform: "translate(-50%, -50%)" }}>
+                        <IonButton size='small' fill="outline" shape="round" color={"danger"} onClick={zona7}>{ta7} / {tr7}</IonButton>
+                    </div>
+                    
+                    <div style={{ position: "absolute", left: "48%", top: "70%", transform: "translate(-50%, -50%)", textAlign: "center" }}>
+                        <IonButton size='small' fill="outline" shape="round" color={"danger"} onClick={zona8}>{ta8} / {tr8}</IonButton>
+                    </div>
+
+                    <div style={{ position: "absolute", left: "68%", top: "60%", transform: "translate(-50%, -50%)", textAlign: "center" }}>
+                        <IonButton size='small' fill="outline" shape="round" color={"danger"} onClick={zona9}>{ta9} / {tr9}</IonButton>
+                    </div>
+
+                    <div style={{ position: "absolute", left: "68%", top: "3%", transform: "translate(-50%, 50%)", textAlign: "center" }}>
+                        <IonButton size='small' fill="outline" shape="round" color={"danger"} onClick={zona10}>{ta10} / {tr10}</IonButton>
                     </div>
                 </div>
                 {form1Visible && (
@@ -324,6 +461,107 @@ const ModificarSesion: React.FC = () => {
                                     setta5(tr5.toString());
                                 } else {
                                     setta5(nuevoValor.toString());
+                                }
+                            }} required></IonInput>
+                        </IonItem>
+                    </div>
+                )}
+
+                {form6Visible && (
+                    <div>
+                        <IonItem>
+                            <IonLabel position="floating">Tiros realizados</IonLabel>
+                            <IonInput type="number" value={tr6} onIonChange={e => settr6(e.detail.value!)} required></IonInput>
+                        </IonItem>
+
+                        <IonItem>
+                            <IonLabel position="floating">Tiros anotados</IonLabel>
+                            <IonInput type="number" value={ta6} onIonChange={e => {
+                                const nuevoValor = parseInt(e.detail.value!);
+                                if(nuevoValor > parseInt(tr6)){
+                                    setta6(tr6.toString());
+                                } else {
+                                    setta6(nuevoValor.toString());
+                                }
+                            }} required></IonInput>
+                        </IonItem>
+                    </div>
+                )}
+                {form7Visible && (
+                    <div>
+                        <IonItem>
+                            <IonLabel position="floating">Tiros realizados</IonLabel>
+                            <IonInput type="number" value={tr7} onIonChange={e => settr7(e.detail.value!)} required></IonInput>
+                        </IonItem>
+
+                        <IonItem>
+                            <IonLabel position="floating">Tiros anotados</IonLabel>
+                            <IonInput type="number" value={ta7} onIonChange={e => {
+                                const nuevoValor = parseInt(e.detail.value!);
+                                if(nuevoValor > parseInt(tr7)){
+                                    setta7(tr7.toString());
+                                } else {
+                                    setta7(nuevoValor.toString());
+                                }
+                            }} required></IonInput>
+                        </IonItem>
+                    </div>
+                )}
+                {form8Visible && (
+                    <div>
+                        <IonItem>
+                            <IonLabel position="floating">Tiros realizados</IonLabel>
+                            <IonInput type="number" value={tr8} onIonChange={e => settr8(e.detail.value!)} required></IonInput>
+                        </IonItem>
+
+                        <IonItem>
+                            <IonLabel position="floating">Tiros anotados</IonLabel>
+                            <IonInput type="number" value={ta8} onIonChange={e => {
+                                const nuevoValor = parseInt(e.detail.value!);
+                                if(nuevoValor > parseInt(tr8)){
+                                    setta8(tr8.toString());
+                                } else {
+                                    setta8(nuevoValor.toString());
+                                }
+                            }} required></IonInput>
+                        </IonItem>
+                    </div>
+                )}
+                {form9Visible && (
+                    <div>
+                        <IonItem>
+                            <IonLabel position="floating">Tiros realizados</IonLabel>
+                            <IonInput type="number" value={tr9} onIonChange={e => settr9(e.detail.value!)} required></IonInput>
+                        </IonItem>
+
+                        <IonItem>
+                            <IonLabel position="floating">Tiros anotados</IonLabel>
+                            <IonInput type="number" value={ta9} onIonChange={e => {
+                                const nuevoValor = parseInt(e.detail.value!);
+                                if(nuevoValor > parseInt(tr9)){
+                                    setta9(tr9.toString());
+                                } else {
+                                    setta9(nuevoValor.toString());
+                                }
+                            }} required></IonInput>
+                        </IonItem>
+                    </div>
+                )}
+                {form10Visible && (
+                    <div>
+                        <IonItem>
+                            <IonLabel position="floating">Tiros realizados</IonLabel>
+                            <IonInput type="number" value={tr10} onIonChange={e => settr10(e.detail.value!)} required></IonInput>
+                        </IonItem>
+
+                        <IonItem>
+                            <IonLabel position="floating">Tiros anotados</IonLabel>
+                            <IonInput type="number" value={ta10} onIonChange={e => {
+                                const nuevoValor = parseInt(e.detail.value!);
+                                if(nuevoValor > parseInt(tr10)){
+                                    setta10(tr10.toString());
+                                } else {
+                                    setta10(nuevoValor.toString());
                                 }
                             }} required></IonInput>
                         </IonItem>
