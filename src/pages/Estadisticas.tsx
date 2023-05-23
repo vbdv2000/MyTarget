@@ -35,7 +35,6 @@ const Estadisticas: React.FC = () => {
     tiros_realizados: string;
     tiros_anotados: string;
     usuario: string;
-    aciertoMedioZona: number;
   }
     
   const [sesiones, setSesiones] = useState<Sesion[]>([]);
@@ -46,7 +45,6 @@ const Estadisticas: React.FC = () => {
   const [aciertoTotalMedio, setAciertoTotalMedio] = useState('');
   const [aciertoTotalMedio2puntos, setAciertoTotalMedio2puntos] = useState('');
   const [aciertoTotalMedio3puntos, setAciertoTotalMedio3puntos] = useState('');
-  const [aciertosMedio, setAciertosMedio] = useState<String[]>([]);
   const [obtenidas, setObtenidas] = useState(false);
 
   const [tirosAnotadosTotales, setTirosAnotadosTotales] = useState(0);
@@ -65,40 +63,6 @@ const Estadisticas: React.FC = () => {
   const svgRef6 = useRef(null);
 
   const accordionGroup = useRef<null | HTMLIonAccordionGroupElement>(null);
-
-
-
-/*
-  //El acierto medio total es el valor de sumar todos los tiros anotados de todoas las zonas de todas las seiones y dividirlo entre todos los tiros realizados
-  async function func_aciertoMedioTotal() {
-    if (loading) {
-      return;
-    } 
-      //Obtener los datos de todas las sesiones
-    //await obtenerSesiones(); 
-    console.log(sesiones);
-    //Recorremos cada sesion y obtenemos todas las zonas
-    let tiros_realizados_total = '0';
-    let tiros_anotados_total = '0';
-    
-    sesiones.map((sesion) => {
-      //Sumamos los tiros anotados y los acumulamos y los realizados y los acumulados de cada zona
-      sesion.zonas.map((zona) => { 
-        sesion.tiros_realizados_total = (parseInt(sesion.tiros_realizados_total) + parseInt(zona.tiros_realizados)).toString();
-        sesion.tiros_anotados_total = (parseInt(sesion.tiros_anotados_total) + parseInt(zona.tiros_anotados)).toString();
-      });
-      tiros_realizados_total = (parseInt(tiros_realizados_total) + parseInt(sesion.tiros_realizados_total)).toString();
-      tiros_anotados_total = (parseInt(tiros_anotados_total) + parseInt(sesion.tiros_anotados_total)).toString();
-      console.log(sesion.tiros_realizados_total);
-      console.log(sesion.tiros_anotados_total);
-    });   
-    console.log(tiros_realizados_total);
-    console.log(tiros_anotados_total);
-    
-
-    
-  } 
-  */
  
   async function calcularEstadisticas(){
     const token = cookies.token;
@@ -124,7 +88,6 @@ const Estadisticas: React.FC = () => {
         var tiros_anotados_2puntos_sesiones = 0;
         var tiros_realizados_3puntos_sesiones = 0;
         var tiros_anotados_3puntos_sesiones = 0;
-        const aciertosMedio: string[] = [];
         //Formateamos las sesiones para que guarde en sesiones la fecha con el formato yyyy-mm-dd
         const sesionesFormateadas = await Promise.all(response.data.sesiones.map(async (sesion: Sesion) => {
           const fechaFormateada = new Date(sesion.fecha).toISOString().slice(0, 10);
@@ -174,7 +137,6 @@ const Estadisticas: React.FC = () => {
           tiros_realizados_3puntos_sesiones += tr_3puntos;
           tiros_anotados_3puntos_sesiones += ta_3puntos;
           
-          aciertosMedio.push((ta/tr*100).toFixed(2));
           const sesionModificada: Sesion = {
             ...sesion,
             fecha: fechaFormateada,
@@ -198,7 +160,6 @@ const Estadisticas: React.FC = () => {
         const aciertoMedio2puntos =(tiros_anotados_2puntos_sesiones/tiros_realizados_2puntos_sesiones*100).toFixed(2);
         const aciertoMedio3puntos =(tiros_anotados_3puntos_sesiones/tiros_realizados_3puntos_sesiones*100).toFixed(2);
         console.log(aciertoMedio);
-        console.log(aciertosMedio);
         setTirosAnotadosTotales(tiros_anotados_total_sesiones);
         setTirosRealizadosTotales(tiros_realizados_total_sesiones);
         setTirosAnotadosTotales2puntos(tiros_anotados_2puntos_sesiones);
@@ -239,7 +200,7 @@ const Estadisticas: React.FC = () => {
   };
 
 
-  const crearGraficos = (datos: { fecha: Date; acierto: string; }[], svgRef) => {    
+  const crearGraficos = (datos: { fecha: Date; acierto: string; }[], svgRef: MutableRefObject<null>) => {    
     // Tamaño del gráfico
     const margin = { top: 20, right: 20, bottom: 30, left: 50 };
     const width = 300 - margin.left - margin.right;
@@ -301,7 +262,7 @@ const Estadisticas: React.FC = () => {
       .enter()
       .append('circle')
       .attr('cx', d => xScale(d.fecha))
-      .attr('cy', d => yScale(d.acierto))
+      .attr('cy', d => yScale(parseInt(d.acierto)))
       .attr('r', 5)
       .attr('fill', 'orange');
 
@@ -312,7 +273,7 @@ const Estadisticas: React.FC = () => {
       .append('text')
       .attr('class', 'valor')
       .attr('x', d => xScale(d.fecha))
-      .attr('y', d => yScale(d.acierto) - 10)
+      .attr('y', d => yScale(parseInt(d.acierto)) - 10)
       .text(d => d.acierto);
 
     // Fecha en cada punto
@@ -322,7 +283,7 @@ const Estadisticas: React.FC = () => {
     .append('text')
     .attr('class', 'fecha')
     .attr('x', d => xScale(d.fecha))
-    .attr('y', d => yScale(d.acierto) + 15)
+    .attr('y', d => yScale(parseInt(d.acierto)) + 15)
     .text(d => d3.timeFormat('%d/%m/%Y')(d.fecha)); // Formato de fecha
 
     svg.append('style').text(`

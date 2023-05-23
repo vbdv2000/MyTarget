@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const tokenExpTime = require('./config').tokenExpTime;
+const nodemailer = require('nodemailer');
+
 
 const tokenService = require('./services/token.service');
 const { conectarDB } = require('./database');
@@ -105,8 +107,8 @@ app.post('/registro', async (req, res) => {
       res.status(400).json({
         error: 'Registro no válido',
         description: 'Email ya registrado en nuestra base de datos'
-    });
-    connection.end();
+      });
+      connection.end();
 
     }
   } catch (error) {
@@ -115,6 +117,93 @@ app.post('/registro', async (req, res) => {
     res.status(500).send('Error al crear usuario');
   }
 });
+
+
+// Solicitud GET para recuperar la contraseña
+app.get('/recuperar', async (req, res) => {
+
+  try{
+    // Obtener el correo electrónico 
+    const email = req.query.email;
+
+    const connection = await conectarDB();
+
+    const [rows] = await connection.execute('SELECT * FROM usuario WHERE email = ? ', [email]);
+ 
+    // Si hay un usuario con ese email
+    if (rows.length == 1) {
+      // Crear contraseña nueva
+      const newPassword = generaPassword();
+
+      // Enviar correo
+      enviarCorreo(email, newPassword);
+
+      // Modificar contraseña
+      bcrypt.hash(newPassword, 10, async (err, hash) => {
+        if (err) {
+          console.error(err);
+        } else {  
+          const [rows2] = await connection.execute('UPDATE usuario SET contrasena = ? WHERE email = ? ', [hash, email]);
+          connection.end();
+          console.log(rows2);
+          res.status(201).json({
+            mensaje: 'Contraseña modificada correctamente',
+            usuario: email
+          });
+        }
+      })
+    } else {
+      res.status(400).json({
+        error: 'Error restableciendo',
+        mensaje: 'Email no registrado en nuestra base de datos'
+      });
+    }
+
+  } catch (error) {
+    console.error(error);
+    // Enviamos una respuesta de error 
+    res.status(500).send('Error al crear usuario');
+  }
+  
+
+});
+
+function enviarCorreo( email,  password){
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+      auth: {
+        user: 'my.basket.target@gmail.com',
+        pass: 'frljgjbghbqnswuk'
+      }
+    });
+
+    const mailOptions = {
+      from: 'my.basket.target@gmail.com',
+      to: email,
+      subject: 'Nueva contraseña',
+      text: `Tu contraseña se ha modificado y la nueva contraseña es: ${password}`
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log('Error al enviar el correo electrónico:', error);
+      } else {
+        console.log('Correo electrónico enviado:', info.response);
+      }
+    });
+  };
+
+function generaPassword () {
+  const caracteresPermitidos = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let newPassword = '';
+
+  // Generar la contraseña aleatoria con 6 caracteres
+  for (let i = 0; i < 6;   i++) {
+    const indice = Math.floor(Math.random() * caracteresPermitidos.length);
+    newPassword += caracteresPermitidos.charAt(indice);
+  }
+
+  return newPassword;
+}
 
 //Ruta GET para obtener el usuario y que se muestre en el perfil los datos
 app.get('/usuario', auth, async (req, res) => {
