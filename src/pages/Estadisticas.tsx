@@ -1,10 +1,11 @@
-import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonText, IonRefresher, IonRefresherContent, RefresherEventDetail, useIonViewDidEnter, IonButton, IonCol, IonIcon, IonRow, IonProgressBar, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonAccordion, IonAccordionGroup, IonItem, IonLabel } from "@ionic/react";
+import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonText, IonRefresher, IonRefresherContent, RefresherEventDetail, useIonViewDidEnter, IonButton, IonCol, IonIcon, IonRow, IonProgressBar, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonAccordion, IonAccordionGroup, IonItem, IonLabel, IonImg } from "@ionic/react";
 import axios from "axios";
+import cancha from '../../public/assets/cancha.jpeg';
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { direccionIP } from "../../config";
 import { useCookies } from "react-cookie";
 import { useHistory } from "react-router";
-import { chevronDownCircleOutline, createOutline, trash } from "ionicons/icons";
+import { chevronDownCircleOutline} from "ionicons/icons";
 import './Principal.css';
 import * as d3 from "d3";
 
@@ -41,12 +42,13 @@ const Estadisticas: React.FC = () => {
   const [cookies, setCookie, removeCookie] = useCookies(['token']);
   const [error, setError] = useState('');
 
-  //Estadisticas
+  // Estadisticas generales de todas las sesiones
   const [aciertoTotalMedio, setAciertoTotalMedio] = useState('');
   const [aciertoTotalMedio2puntos, setAciertoTotalMedio2puntos] = useState('');
   const [aciertoTotalMedio3puntos, setAciertoTotalMedio3puntos] = useState('');
   const [obtenidas, setObtenidas] = useState(false);
 
+  // Tiros totales de todas las sesiones para mostrar debajo
   const [tirosAnotadosTotales, setTirosAnotadosTotales] = useState(0);
   const [tirosRealizadosTotales, setTirosRealizadosTotales] = useState(0);
   const [tirosAnotadosTotales2puntos, setTirosAnotadosTotales2puntos] = useState(0);
@@ -61,6 +63,50 @@ const Estadisticas: React.FC = () => {
   const svgRef4 = useRef(null);
   const svgRef5 = useRef(null);
   const svgRef6 = useRef(null);
+
+  // Tiros por zonas
+  var [tr1, settr1] = useState(0);
+  var [ta1, setta1] = useState(0);
+  var [aciertoZona1, setAciertoZona1] = useState('');
+  var [tr2, settr2] = useState(0);
+  var [ta2, setta2] = useState(0);
+  var [aciertoZona2, setAciertoZona2] = useState('');
+  var [tr3, settr3] = useState(0);
+  var [ta3, setta3] = useState(0);
+  var [aciertoZona3, setAciertoZona3] = useState('');
+  var [tr4, settr4] = useState(0);
+  var [ta4, setta4] = useState(0);
+  var [aciertoZona4, setAciertoZona4] = useState('');
+  var [tr5, settr5] = useState(0);
+  var [ta5, setta5] = useState(0);
+  var [aciertoZona5, setAciertoZona5] = useState('');
+  var [tr6, settr6] = useState(0);
+  var [ta6, setta6] = useState(0);
+  var [aciertoZona6, setAciertoZona6] = useState('');
+  var [tr7, settr7] = useState(0);
+  var [ta7, setta7] = useState(0);
+  var [aciertoZona7, setAciertoZona7] = useState('');
+  var [tr8, settr8] = useState(0);
+  var [ta8, setta8] = useState(0);
+  var [aciertoZona8, setAciertoZona8] = useState('');
+  var [tr9, settr9] = useState(0);
+  var [ta9, setta9] = useState(0);
+  var [aciertoZona9, setAciertoZona9] = useState('');
+  var [tr10, settr10] = useState(0);
+  var [ta10, setta10] = useState(0);
+  var [aciertoZona10, setAciertoZona10] = useState('');
+
+  // Booleanos para mostrar % y anotados/realizados al pulsar en una zona
+  const [mostrarTiros1, setMostrarTiros1] = useState(false);
+  const [mostrarTiros2, setMostrarTiros2] = useState(false);
+  const [mostrarTiros3, setMostrarTiros3] = useState(false);
+  const [mostrarTiros4, setMostrarTiros4] = useState(false);
+  const [mostrarTiros5, setMostrarTiros5] = useState(false);
+  const [mostrarTiros6, setMostrarTiros6] = useState(false);
+  const [mostrarTiros7, setMostrarTiros7] = useState(false);
+  const [mostrarTiros8, setMostrarTiros8] = useState(false);
+  const [mostrarTiros9, setMostrarTiros9] = useState(false);
+  const [mostrarTiros10, setMostrarTiros10] = useState(false);
 
   const accordionGroup = useRef<null | HTMLIonAccordionGroupElement>(null);
  
@@ -88,6 +134,8 @@ const Estadisticas: React.FC = () => {
         var tiros_anotados_2puntos_sesiones = 0;
         var tiros_realizados_3puntos_sesiones = 0;
         var tiros_anotados_3puntos_sesiones = 0;
+        var realizados_zonas: number[]=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        var anotados_zonas: number[]=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         //Formateamos las sesiones para que guarde en sesiones la fecha con el formato yyyy-mm-dd
         const sesionesFormateadas = await Promise.all(response.data.sesiones.map(async (sesion: Sesion) => {
           const fechaFormateada = new Date(sesion.fecha).toISOString().slice(0, 10);
@@ -128,7 +176,41 @@ const Estadisticas: React.FC = () => {
               tr_2puntos += parseInt(zona.tiros_realizados);
               ta_2puntos += parseInt(zona.tiros_anotados);
             }
+
+            if (zona.posicion == 1){
+              realizados_zonas[0] += parseInt(zona.tiros_realizados);
+              anotados_zonas[0] += parseInt(zona.tiros_anotados);
+            } else if (zona.posicion === 2){
+              realizados_zonas[1] += parseInt(zona.tiros_realizados);
+              anotados_zonas[1] += parseInt(zona.tiros_anotados);
+            } else if (zona.posicion === 3){
+              realizados_zonas[2] += parseInt(zona.tiros_realizados);
+              anotados_zonas[2] += parseInt(zona.tiros_anotados);
+            } else if (zona.posicion === 4){
+              realizados_zonas[3] += parseInt(zona.tiros_realizados);
+              anotados_zonas[3] += parseInt(zona.tiros_anotados);
+            } else if (zona.posicion === 5){
+              realizados_zonas[4] += parseInt(zona.tiros_realizados);
+              anotados_zonas[4] += parseInt(zona.tiros_anotados);
+            } else if (zona.posicion === 6){
+              realizados_zonas[5] += parseInt(zona.tiros_realizados);
+              anotados_zonas[5] += parseInt(zona.tiros_anotados);
+            } else if (zona.posicion === 7){
+              realizados_zonas[6] += parseInt(zona.tiros_realizados);
+              anotados_zonas[6] += parseInt(zona.tiros_anotados);
+            } else if (zona.posicion === 8){
+              realizados_zonas[7] += parseInt(zona.tiros_realizados);
+              anotados_zonas[7] += parseInt(zona.tiros_anotados);
+            } else if (zona.posicion === 9){
+              realizados_zonas[8] += parseInt(zona.tiros_realizados);
+              anotados_zonas[8] += parseInt(zona.tiros_anotados);
+            } else if (zona.posicion === 10){
+              realizados_zonas[9] += parseInt(zona.tiros_realizados);
+              anotados_zonas[9] += parseInt(zona.tiros_anotados);
+            }            
           }));
+
+          
           tiros_realizados_total_sesiones += tr;
           tiros_anotados_total_sesiones += ta;
           
@@ -154,6 +236,50 @@ const Estadisticas: React.FC = () => {
          
           return sesionModificada; 
         }));
+        // Estadísticas por zonas acumuladas para el mapa
+        settr1(realizados_zonas[0]);   
+        setta1(anotados_zonas[0]);
+        setAciertoZona1((realizados_zonas[0] == 0) ? '0' : (anotados_zonas[0] * 100 / realizados_zonas[0]).toFixed(2));
+
+        settr2(realizados_zonas[1]); 
+        setta2(anotados_zonas[1]);
+        setAciertoZona2((realizados_zonas[1] == 0) ? '0' : (anotados_zonas[1] * 100 / realizados_zonas[1]).toFixed(2));
+
+        settr3(realizados_zonas[2]); 
+        setta3(anotados_zonas[2]);
+        setAciertoZona3((realizados_zonas[2] == 0) ? '0' : (anotados_zonas[2] * 100 / realizados_zonas[2]).toFixed(2));
+
+        settr4(realizados_zonas[3]); 
+        setta4(anotados_zonas[3]);
+        setAciertoZona4((realizados_zonas[3] == 0) ? '0' : (anotados_zonas[3] * 100 / realizados_zonas[3]).toFixed(2));
+
+        settr5(realizados_zonas[4]); 
+        setta5(anotados_zonas[4]);
+        setAciertoZona5((realizados_zonas[4] == 0) ? '0' : (anotados_zonas[4] * 100 / realizados_zonas[4]).toFixed(2));
+
+        settr6(realizados_zonas[5]); 
+        setta6(anotados_zonas[5]);
+        setAciertoZona6((realizados_zonas[5] == 0) ? '0' : (anotados_zonas[5] * 100 / realizados_zonas[5]).toFixed(2));
+
+        settr7(realizados_zonas[6]); 
+        setta7(anotados_zonas[6]);
+        setAciertoZona7((realizados_zonas[6] == 0) ? '0' : (anotados_zonas[6] * 100 / realizados_zonas[6]).toFixed(2));
+
+        settr8(realizados_zonas[7]); 
+        setta8(anotados_zonas[7]);
+        setAciertoZona8((realizados_zonas[7] == 0) ? '0' : (anotados_zonas[7] * 100 / realizados_zonas[7]).toFixed(2));
+
+        settr9(realizados_zonas[8]); 
+        setta9(anotados_zonas[8]);
+        setAciertoZona9((realizados_zonas[8] == 0) ? '0' : (anotados_zonas[8] * 100 / realizados_zonas[8]).toFixed(2));
+
+        settr10(realizados_zonas[9]); 
+        setta10(anotados_zonas[9]);
+        setAciertoZona10((realizados_zonas[9] == 0) ? '0' : (anotados_zonas[9] * 100 / realizados_zonas[9]).toFixed(2));  
+        console.log(anotados_zonas[0] * 100 / realizados_zonas[0] );
+        console.log(((realizados_zonas[0] == 0) ? 'Holaaa' : (anotados_zonas[0] * 100 / realizados_zonas[0]).toString()));
+        
+        // Estadísticas para datos por sesiones
         console.log(sesionesFormateadas); 
         setSesiones(sesionesFormateadas); 
         const aciertoMedio =(tiros_anotados_total_sesiones/tiros_realizados_total_sesiones*100).toFixed(2);
@@ -367,7 +493,8 @@ const Estadisticas: React.FC = () => {
       };
     });
     crearGraficos(aciertoMedioAcumulado3puntos, svgRef6);  
-
+    
+    
   }, [obtenidas]);  
 
   function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
@@ -456,6 +583,143 @@ const Estadisticas: React.FC = () => {
     }
     
   };
+
+  const getColorCodigo = (valor: number) => {
+    if (valor < 15) {
+      return "#f92d2d"; // rojo
+    } else if (valor >= 15 && valor < 30) {
+      return "#ffadad"; // rojo claro
+    } else if (valor >= 30 && valor < 55) {
+      return "#f6ff8e"; // amarillo
+    } else if (valor >= 50 && valor < 65) {
+      return "#98ff8e"; // verde claro
+    } else {
+      return "#30ff1c"; // verde
+    }
+    
+  };
+
+
+  const mostrar1 = () => {
+    setMostrarTiros1(true);
+    setMostrarTiros2(false);
+    setMostrarTiros3(false);
+    setMostrarTiros4(false);
+    setMostrarTiros5(false);
+    setMostrarTiros6(false);
+    setMostrarTiros7(false);
+    setMostrarTiros8(false);
+    setMostrarTiros9(false);
+    setMostrarTiros10(false);
+  }
+  const mostrar2 = () => {
+    setMostrarTiros2(true);
+    setMostrarTiros1(false);
+    setMostrarTiros3(false);
+    setMostrarTiros4(false);
+    setMostrarTiros5(false);
+    setMostrarTiros6(false);
+    setMostrarTiros7(false);
+    setMostrarTiros8(false);
+    setMostrarTiros9(false);
+    setMostrarTiros10(false);
+  }
+  const mostrar3 = () => {
+    setMostrarTiros3(true);
+    setMostrarTiros1(false);
+    setMostrarTiros2(false);
+    setMostrarTiros4(false);
+    setMostrarTiros5(false);
+    setMostrarTiros6(false);
+    setMostrarTiros7(false);
+    setMostrarTiros8(false);
+    setMostrarTiros9(false);
+    setMostrarTiros10(false);
+  }
+  const mostrar4 = () => {
+    setMostrarTiros4(true);
+    setMostrarTiros1(false);
+    setMostrarTiros2(false);
+    setMostrarTiros3(false);
+    setMostrarTiros5(false);
+    setMostrarTiros6(false);
+    setMostrarTiros7(false);
+    setMostrarTiros8(false);
+    setMostrarTiros9(false);
+    setMostrarTiros10(false);
+  }
+  const mostrar5 = () => {
+    setMostrarTiros5(true);
+    setMostrarTiros1(false);
+    setMostrarTiros2(false);
+    setMostrarTiros3(false);
+    setMostrarTiros4(false);
+    setMostrarTiros6(false);
+    setMostrarTiros7(false);
+    setMostrarTiros8(false);
+    setMostrarTiros9(false);
+    setMostrarTiros10(false);
+  }
+  const mostrar6 = () => {
+    setMostrarTiros6(true);
+    setMostrarTiros1(false);
+    setMostrarTiros2(false);
+    setMostrarTiros3(false);
+    setMostrarTiros4(false);
+    setMostrarTiros5(false);
+    setMostrarTiros7(false);
+    setMostrarTiros8(false);
+    setMostrarTiros9(false);
+    setMostrarTiros10(false);
+  }
+  const mostrar7 = () => {
+    setMostrarTiros7(true);
+    setMostrarTiros1(false);
+    setMostrarTiros2(false);
+    setMostrarTiros3(false);
+    setMostrarTiros4(false);
+    setMostrarTiros5(false);
+    setMostrarTiros6(false);
+    setMostrarTiros8(false);
+    setMostrarTiros9(false);
+    setMostrarTiros10(false);
+  }
+  const mostrar8 = () => {
+    setMostrarTiros8(true);
+    setMostrarTiros1(false);
+    setMostrarTiros2(false);
+    setMostrarTiros3(false);
+    setMostrarTiros4(false);
+    setMostrarTiros5(false);
+    setMostrarTiros6(false);
+    setMostrarTiros7(false);
+    setMostrarTiros9(false);
+    setMostrarTiros10(false);
+  }
+  const mostrar9 = () => {
+    setMostrarTiros9(true);
+    setMostrarTiros1(false);
+    setMostrarTiros2(false);
+    setMostrarTiros3(false);
+    setMostrarTiros4(false);
+    setMostrarTiros5(false);
+    setMostrarTiros6(false);
+    setMostrarTiros7(false);
+    setMostrarTiros8(false);
+    setMostrarTiros10(false);
+  }
+  const mostrar10 = () => {
+    setMostrarTiros10(true);
+    setMostrarTiros1(false);
+    setMostrarTiros2(false);
+    setMostrarTiros3(false);
+    setMostrarTiros4(false);
+    setMostrarTiros5(false);
+    setMostrarTiros6(false);
+    setMostrarTiros7(false);
+    setMostrarTiros8(false);
+    setMostrarTiros9(false);
+  }
 
   return (
     <IonPage>
@@ -567,6 +831,95 @@ const Estadisticas: React.FC = () => {
                         </IonCardContent>
                       </IonCard>
 
+                    </div>
+                  </IonAccordion>
+                  <IonAccordion value="fourth">
+                    <IonItem slot="header" color="light">
+                      <IonLabel>Mapa de zonas calientes/frías</IonLabel>
+                    </IonItem>
+                    <div className="ion-padding" slot="content" style={{backgroundColor: "#ffc753"}}>
+                      <IonCard>
+                        <IonCardTitle style={{ textAlign: "center", fontSize: "18px", marginTop: "10px"}}>Mapa por zonas</IonCardTitle>
+                        <IonCardContent>
+                          {mostrarTiros1 && <><span style={{ fontSize: "14px", fontWeight: "bold"}}>{aciertoZona1}% </span><br /><span style={{ fontSize: "12px", margin: "0" }}>{ta1} / {tr1}</span></>}
+                          {mostrarTiros2 && <><span style={{ fontSize: "14px", fontWeight: "bold"}}>{aciertoZona2}% </span><br /><span style={{ fontSize: "12px", margin: "0" }}>{ta2} / {tr2}</span></>}
+                          {mostrarTiros3 && <><span style={{ fontSize: "14px", fontWeight: "bold" }}>{aciertoZona3}% </span><br /><span style={{ fontSize: "12px", margin: "0" }}>{ta3} / {tr3}</span></>}
+                          {mostrarTiros4 && <><span style={{ fontSize: "14px", fontWeight: "bold"}}>{aciertoZona4}% </span><br /><span style={{ fontSize: "12px", margin: "0" }}>{ta4} / {tr4}</span></>}
+                          {mostrarTiros5 && <><span style={{ fontSize: "14px", fontWeight: "bold"}}>{aciertoZona5}% </span><br /><span style={{ fontSize: "12px", margin: "0" }}>{ta5} / {tr5}</span></>}
+                          {mostrarTiros6 && <><span style={{ fontSize: "14px", fontWeight: "bold"}}>{aciertoZona6}% </span><br /><span style={{ fontSize: "12px", margin: "0" }}>{ta6} / {tr6}</span></>}
+                          {mostrarTiros7 && <><span style={{ fontSize: "14px", fontWeight: "bold" }}>{aciertoZona7}% </span><br /><span style={{ fontSize: "12px", margin: "0" }}>{ta7} / {tr7}</span></>}
+                          {mostrarTiros8 && <><span style={{ fontSize: "14px", fontWeight: "bold"}}>{aciertoZona8}% </span><br /><span style={{ fontSize: "12px", margin: "0" }}>{ta8} / {tr8}</span></>}
+                          {mostrarTiros9 && <><span style={{ fontSize: "14px", fontWeight: "bold"}}>{aciertoZona9}% </span><br /><span style={{ fontSize: "12px", margin: "0" }}>{ta9} / {tr9}</span></>}
+                          {mostrarTiros10 && <><span style={{ fontSize: "14px", fontWeight: "bold"}}>{aciertoZona10}% </span><br /><span style={{ fontSize: "12px", margin: "0" }}>{ta10} / {tr10}</span></>}
+
+                          
+                          <div style={{position: 'relative'}}>
+                            <IonImg className='cancha' src={cancha} alt="cancha" />
+                            
+                            <div style={{ textAlign:"center", position: "absolute", left: "3%", top: "0%", transform: "translate(-50%, 15%)"}}>
+                              <IonButton onClick={mostrar1} style={{ height: "70px", width: "50px", color: "black", backgroundColor: getColorCodigo(parseInt(aciertoZona1)) }} size="small" fill="outline" shape="round">
+                                <span style={{ fontSize: "13px", fontWeight: "bold", margin: "0" }}>{aciertoZona1} %</span>
+                              </IonButton>
+                            </div>
+                            
+                            <div style={{ textAlign:"center",position: "absolute", left: "15%", top: "78%", transform: "translate(-50%, -50%)" }}>
+                              <IonButton onClick={mostrar2} style={{height:"40px", width: "70px", color: "black", backgroundColor: getColorCodigo(parseInt(aciertoZona2))}} fill="outline" shape="round" >
+                                <span style={{ fontSize: "12px", fontWeight: "bold", margin: "0" }}>{aciertoZona2} %</span> 
+                              </IonButton>
+                            </div>
+                            
+                            <div style={{ textAlign:"center", position: "absolute", left: "48%", top: "93%", transform: "translate(-50%, -50%)"}}>
+                              <IonButton onClick={mostrar3} style={{width: "90px", color: "black", backgroundColor: getColorCodigo(parseInt(aciertoZona3))}} fill="outline" size='default' shape="round">
+                                <span style={{ fontSize: "12px", fontWeight: "bold", margin: "0" }}>{aciertoZona3} %</span> 
+                              </IonButton>
+                            </div>
+
+                            <div style={{ position: "absolute", left: "82%", top: "78%", transform: "translate(-50%, -50%)", textAlign: "center" }}>
+                                <IonButton  onClick={mostrar4} style={{height:"40px", width: "70px",color: "black", backgroundColor: getColorCodigo(parseInt(aciertoZona4))}} fill="outline" shape="round" >
+                                  <span style={{ fontSize: "12px", fontWeight: "bold", margin: "0" }}>{aciertoZona4} %</span> 
+                                </IonButton>
+                            </div>
+
+                            <div style={{ position: "absolute", left: "87%", top: "0%", transform: "translate(-50%, 15%)", textAlign: "center" }}>
+                                <IonButton onClick={mostrar5} style={{height:"70px", width: "50px", color: "black", backgroundColor: getColorCodigo(parseInt(aciertoZona5))}} shape="round" size='default' fill="outline">
+                                  <span style={{ fontSize: "12px", fontWeight: "bold", margin: "0"}}>{aciertoZona5} %</span> 
+                                </IonButton>
+                            </div>
+
+
+
+                            <div style={{ textAlign:"center",position: "absolute", left: "27%", top: "0%", transform: "translate(-50%, 15%)"}}>
+                                <IonButton onClick={mostrar6} style={{height:"60px", width: "50px", color: "black", backgroundColor: getColorCodigo(parseInt(aciertoZona6))}} size='small' fill="outline" shape="round">
+                                  <span style={{ fontSize: "12px", fontWeight: "bold", margin: "0" }}>{aciertoZona6} %</span> 
+                                </IonButton>
+                            </div>
+                            
+                            <div style={{ position: "absolute", left: "27%", top: "55%", transform: "translate(-50%, -50%)" }}>
+                                <IonButton onClick={mostrar7} style={{height:"40px", width: "50px", color: "black", display: "flex", alignItems: "center", backgroundColor: getColorCodigo(parseInt(aciertoZona7)) }} size='small' fill="outline" shape="round">
+                                  <span style={{ fontSize: "12px", fontWeight: "bold", margin: "0" }}>{aciertoZona7} %</span> 
+                                </IonButton>
+                            </div>
+                            
+                            <div style={{ position: "absolute", left: "46%", top: "70%", transform: "translate(-50%, -50%)", textAlign: "center"}}>
+                                <IonButton onClick={mostrar8} style={{height:"35px", width: "70px", color: "black", backgroundColor: getColorCodigo(parseInt(aciertoZona8))}} size='small' fill="outline" shape="round">
+                                  <span style={{ fontSize: "12px", fontWeight: "bold", margin: "0" }}>{aciertoZona8} %</span> 
+                                </IonButton>
+                            </div>
+
+                            <div style={{ position: "absolute", left: "67%", top: "55%", transform: "translate(-50%, -50%)", textAlign: "center" }}>
+                                <IonButton onClick={mostrar9} style={{height:"40px", width: "50px", color: "black", backgroundColor: getColorCodigo(parseInt(aciertoZona9))}} size='small' fill="outline" shape="round" >
+                                  <span style={{ fontSize: "12px", fontWeight: "bold", margin: "0" }}>{aciertoZona9} %</span> 
+                                </IonButton>
+                            </div>
+
+                            <div style={{ position: "absolute", left: "67%", top: "0%", transform: "translate(-50%, 15%)", textAlign: "center" }}>
+                                <IonButton onClick={mostrar10} style={{height:"60px", width: "50px", color: "black", backgroundColor: getColorCodigo(parseInt(aciertoZona10))}} size='small' fill="outline" shape="round" >
+                                  <span style={{ fontSize: "12px", fontWeight: "bold", margin: "0" }}>{aciertoZona10} %</span> 
+                                </IonButton>
+                            </div>
+                          </div>
+                        </IonCardContent>
+                      </IonCard>
                     </div>
                   </IonAccordion>
                 </IonAccordionGroup>

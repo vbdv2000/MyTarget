@@ -21,6 +21,8 @@
     "jsx": "react-jsx"
   },
   "include": [
-    "src"
-, "server.js", "database.js"  ]
+    "src", 
+    "server.js", 
+    "database.js"  
+  ], 
 }

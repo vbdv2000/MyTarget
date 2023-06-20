@@ -38,12 +38,6 @@ interface AppPage {
 
 const appPages: AppPage[] = [
   {
-    title: 'Inicio',
-    url: '/page/Inicio',
-    iosIcon: homeSharp,
-    mdIcon: homeSharp
-  },
-  {
     title: 'Estadísticas',
     url: '/estadisticas',
     iosIcon: statsChartSharp,
@@ -95,11 +89,12 @@ const Menu: React.FC = () => {
         setEmail(usuario.email);
         setNombre(usuario.nombre);
         setApellidos(usuario.apellidos);
-        setEquipo(usuario.equipo);
-        const posicionMayuscula = usuario.posicion.charAt(0).toUpperCase() + usuario.posicion.slice(1);
+        setEquipo(usuario.equipo || null);
+        const posicionMayuscula = usuario.posicion ? usuario.posicion.charAt(0).toUpperCase() + usuario.posicion.slice(1) : null;
         setPosicion(posicionMayuscula);
       }  catch (error) {
         setCookie('token','');
+        console.log(error);
         console.log("Algo ha ido mal obteniendo datos del usuario");
         history.push('/login');
       }
