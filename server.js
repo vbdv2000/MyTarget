@@ -71,7 +71,6 @@ app.post('/login', async (req, res) => {
 });
 
 //ruta de POST para crear a un usuario nuevo
-
 app.post('/registro', async (req, res) => {
   const { nombre, apellidos, email, password, equipo, posicion, mano_habil } = req.body;
   try {
@@ -117,6 +116,61 @@ app.post('/registro', async (req, res) => {
     res.status(500).send('Error al crear usuario');
   }
 });
+
+
+//ruta de POST para iniciar sesión con OAuth y si el usuario no existe registrarlo en la bd
+app.post('/registroOAuth', async (req, res) => {
+  const { nombre, apellidos, email} = req.body;
+  const usuario = {email: email};
+  const password = generaPassword();
+  console.log(usuario.email);
+  try {
+    const connection = await conectarDB();
+    const [rows] = await connection.execute('SELECT * FROM usuario WHERE email = ? ', [email]);
+
+    if (rows.length == 0) {
+      const hash = bcrypt.hashSync(password, 10);
+      
+      // Insertamos un nuevo usuario
+      const [result] = await connection.query('INSERT INTO usuario (nombre, apellidos, email, contrasena, equipo, posicion, mano_habil) VALUES (?, ?, ?, ?, ?, ?, ?)', 
+      [ nombre, 
+        apellidos, 
+        email, 
+        hash, 
+        null, 
+        null, 
+        null
+      ]);  
+
+      console.log(result);  
+      const token = tokenService.creaToken(usuario);
+      res.cookie('token', token, { maxAge: tokenExpTime, httpOnly: true }); //Enviamos una cookie con una duración de 1 min
+
+      res.status(200).json({
+        mensaje: 'Usuario creado exitosamente',
+        usuario: email,
+        token: token
+      });
+
+    } else {
+      const token = tokenService.creaToken(rows[0]);
+      console.log(token);
+      res.cookie('token', token, { maxAge: tokenExpTime, httpOnly: true }); //Enviamos una cookie con una duración de 1 min
+
+      res.status(202).json({
+        mensaje: 'Usuario ya creado, solo hacemos login',
+        usuario: email,
+        token: token
+      });
+    }
+    connection.end();
+  } catch (error) {
+    console.error(error);
+    // Enviamos una respuesta de error 
+    res.status(500).send('Error al crear usuario');
+  }
+});
+
 
 
 // Solicitud GET para recuperar la contraseña
@@ -193,11 +247,11 @@ function enviarCorreo( email,  password){
   };
 
 function generaPassword () {
-  const caracteresPermitidos = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const caracteresPermitidos = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,-;:_';
   let newPassword = '';
 
-  // Generar la contraseña aleatoria con 6 caracteres
-  for (let i = 0; i < 6;   i++) {
+  // Generar la contraseña aleatoria con 10 caracteres
+  for (let i = 0; i < 10;   i++) {
     const indice = Math.floor(Math.random() * caracteresPermitidos.length);
     newPassword += caracteresPermitidos.charAt(indice);
   }

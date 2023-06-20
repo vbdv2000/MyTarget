@@ -18,7 +18,7 @@ const Registro: React.FC = () => {
   const [aceptaTerminos, setAceptaTerminos] = useState<boolean>(false);
   const [botonHabilitado, setBotonHabilitado] = useState(false);
   const [error, setError] = useState('');
-  
+
   const [present] = useIonToast();
   
   const presentToast = () => {
@@ -33,6 +33,23 @@ const Registro: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+        // Validar que tenga más de 6 caracteres teniendo minúsculas, mayúsculas y número signo de puntuación
+
+        if (password.length < 6) {
+            setError('La contraseña debe tener al menos 6 caracteres');
+            return;
+        }
+
+        if (!/[a-z]/.test(password) || !/[A-Z]/.test(password)) {
+            setError('La contraseña debe contener al menos una letra mayúscula y una letra minúscula');
+            return;
+        }
+
+        if (!/\d|\p{P}/u.test(password)) {
+            setError('La contraseña debe contener al menos un número o un signo de puntuación');
+            return;
+          }
+
         if(password == password2){
             const response = await axios.post(`http://${direccionIP}:5000/registro`, 
             { nombre, apellidos, email, password, equipo, posicion, mano_habil});
@@ -47,17 +64,7 @@ const Registro: React.FC = () => {
     } catch (err) {
         setError("Email ya registrado en nuestra base de datos");
     }
-      /*
-    console.log('Nombre:', nombre);
-    console.log('Apellidos:', apellidos);
-    console.log('Email:', email);
-    console.log('Contraseña:', password);
-    console.log('Contraseña2:', password2);
-    console.log('Equipo:', equipo);
-    console.log('Posicion:', posicion);
-    console.log('Mano hábil:', mano_habil);
-    console.log('Terminos:', aceptaTerminos);
-    */
+     
   }
 
   //Este useEffect se ejecuta cada vez que cambia el valor del checkBox
@@ -157,7 +164,7 @@ const Registro: React.FC = () => {
                     <IonLabel>Acepto los términos y condiciones</IonLabel>
                 </IonItem>
 
-                {error && <IonText color="danger">{error}</IonText>}
+                {error && <IonText color="danger">{error}<br></br></IonText>}
                 <IonButton id="boton_enviar" type="submit" expand='block' disabled={!botonHabilitado}>Continuar</IonButton>
                 </form>
 

@@ -58,12 +58,7 @@ const App: React.FC = () => {
             <Route path="/" exact={true}>
               <Redirect to="/login" />
             </Route>
-            
-           
-            
-            <Route path="/page/:name" exact={true}>
-              <Page />
-            </Route>
+          
           </IonRouterOutlet>
         </IonSplitPane>
       </IonReactRouter>

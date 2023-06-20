@@ -4,7 +4,7 @@ import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonMenuButton, 
 import { FormEvent, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useCookies } from 'react-cookie';
-import { useHistory, useLocation } from 'react-router';
+import { useHistory } from 'react-router';
 import { direccionIP } from '../../config';
 const ModificarSesion: React.FC = () => {
 

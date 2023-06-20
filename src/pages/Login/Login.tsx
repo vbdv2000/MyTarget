@@ -6,7 +6,9 @@ import { useHistory } from 'react-router';
 import { useCookies } from 'react-cookie';
 import { direccionIP } from '../../../config';
 import logo from '../../../public/assets/icono-negro-sin-fondo.png';
-
+import { GoogleLogin } from '@react-oauth/google';
+import jwt_decode from 'jwt-decode'
+import tokenService from './../../../services/token.service.js';
 
 
 
@@ -45,23 +47,47 @@ const LoginPage = () => {
     } catch (error) {
       setError("Usuario o contraseña incorrectos");
     }
-    /*
-    // Aquí va la lógica para iniciar sesión
-    if (!email || !password) {
-      setError('Por favor ingrese su correo electrónico y contraseña.');
-      return;
-    }
-    if(email == "prueba@gmail.com" && password== "prueba"){
-      presentToast();
-      setTimeout(()=>{}, 2000);
-      setLogin("true");
-      window.location.href = '/page/Inicio';
-    } else {
-      setLogin("false");
-      setError('El usuario o la contraseña no son correctos.');
+  };
+
+  const responseMessage = async (response: any) => {
+    try{
+      console.log(response);
+      var usuario = jwt_decode(response.credential);
+      console.log(usuario);
       
+      //Obtenemos los datos que nos interesan del token que genera el OAuth
+      const nombre = usuario.given_name;
+      const apellidos = usuario.family_name;
+      const email = usuario.email;
+      const res = await axios.post(`http://${direccionIP}:5000/registroOAuth`, 
+      { nombre, apellidos, email});
+      console.log(res);
+      var token = res.data.token;
+      presentToast();
+      setCookie('token',token);
+      setTimeout(()=>{}, 2000);
+
+      //history.push('/perfil')
+      window.location.href = '/perfil';
+
+    } catch(err){
+      if (err.response && err.response.status === 400) {
+        console.log("El usuario ya está creado en nuestra base de datos y ERROR");
+        //presentToast();
+        //const token = tokenService.creaToken(email);
+        //setCookie('token',token);
+        //setTimeout(()=>{}, 2000);
+
+        //window.location.href = '/perfil';
+      } else {
+        setError("Ha habido un error con OAuth");
+      }
     }
-    */
+      
+  };
+  const errorMessage = (error: any) => {
+    console.log(error);
+    setError(error);
   };
 
   return (
@@ -99,7 +125,17 @@ const LoginPage = () => {
             <IonButton id="boton_enviar" type="submit" expand="block" >Iniciar sesión</IonButton>
           </form>
           
-
+          <div style={{textAlign:"center"}}>
+            <IonText color="primary">
+              <h1>o</h1>
+            </IonText>
+          </div>
+          
+          <div style={{textAlign:"-webkit-center", marginBottom:"12px"}}>
+            <GoogleLogin onSuccess={responseMessage} onError={errorMessage} />
+          </div>
+          
+          
           <IonToolbar>
             <IonButtons slot="start">
               <IonButton color="tertiary" fill="outline" routerLink="/recuperar">Olvidé la contraseña</IonButton>
