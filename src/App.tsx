@@ -22,7 +22,6 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
-import Page from './pages/Page';
 import Registro from './pages/Login/Registro';
 import Recuperar from './pages/Login/Recuperar';
 import Perfil from './pages/Perfil';
