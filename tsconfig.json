@@ -22,7 +22,7 @@
   },
   "include": [
     "src", 
-    "server.js", 
-    "database.js"  
+    "src/server.js", 
+    "src/database.js"  
 , "src/config.js"  ], 
 }

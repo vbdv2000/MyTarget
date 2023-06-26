@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
-const tokenExpTime = require('./src/config').tokenExpTime;
+const tokenExpTime = require('./config').tokenExpTime;
 const nodemailer = require('nodemailer');
 
 
