@@ -6,7 +6,7 @@ import { useCookies } from 'react-cookie';
 import { useHistory } from 'react-router';
 import { addCircleOutline, createOutline, trash } from "ionicons/icons";
 import './Principal.css';
-import { direccionIP } from "../../config";
+import { direccionIP } from "../config";
 
 
 
@@ -113,9 +113,9 @@ const Sesiones: React.FC = () => {
         });
         
       console.log(sesiones)
-      setSesiones(sesiones.filter(sesion => sesion.fecha != fecha || sesion.hora != hora));
-     
+      //setSesiones(sesiones.filter(sesion => sesion.fecha != fecha || sesion.hora != hora));
       presentToast();  //Mostrar mensaje
+      window.location.reload();
 
     } catch (error) {
       setCookie('token','');
@@ -179,13 +179,13 @@ const Sesiones: React.FC = () => {
                         <div style={{width: "70px"}}>{new Date(sesion.fecha).toISOString().slice(0, 10)}</div>
                       </IonCol>
                       <IonCol size="auto">
-                        <div style={{width: "31px" }}>{new Date("1970-01-01T" + sesion.hora + "").toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                        <div style={{width: "31px" }}>{new Date(sesion.hora).toISOString().slice(11, 16)}</div>
                       </IonCol>
                       <IonCol style={{textAlign:"center"}}>
-                        <IonButton size="default" onClick={() => editarSesion(sesion.fecha, sesion.hora)}>
+                        <IonButton size="default" onClick={() => editarSesion(new Date(sesion.fecha).toISOString().slice(0, 10), new Date(sesion.hora).toISOString().slice(11, 16))}>
                           <IonIcon slot="icon-only" icon={createOutline}></IonIcon>
                         </IonButton>
-                        <IonButton size="default" color={"danger"} onClick={() => eliminarSesion(new Date(sesion.fecha).toISOString().slice(0, 10), sesion.hora)}>
+                        <IonButton size="default" color={"danger"} onClick={() => eliminarSesion(new Date(sesion.fecha).toISOString().slice(0, 10), new Date(sesion.hora).toISOString().slice(11, 16))}>
                           <IonIcon slot="icon-only" icon={trash} color="dark"></IonIcon>
                         </IonButton>
                       </IonCol>

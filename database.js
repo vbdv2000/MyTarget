@@ -1,14 +1,26 @@
-const mysql = require('mysql2/promise');
+const sql = require('mssql');
 
 async function conectarDB() {
-  const connection = await mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'mytarget',
-    timezone: 'UTC' 
-  });
-  return connection;
+  const config = {
+    server: 'mytarget.database.windows.net',
+    port: 1433,
+    database: 'my-target',
+    user: 'mytarget',
+    password: 'Micontrasena6.',
+    options: {
+      encrypt: true,
+      trustServerCertificate: false,
+      connectTimeout: 30000
+    }
+  };
+
+  try {
+    const pool = await sql.connect(config);
+    return pool;
+  } catch (error) {
+    console.log('Error connecting to SQL Server:', error);
+    throw error;
+  }
 }
 
 module.exports = { conectarDB };

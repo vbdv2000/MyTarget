@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import './Login.css';
 import logo from '../../../public/assets/icono-negro-sin-fondo.png';
 import axios from 'axios';
-import { direccionIP } from '../../../config';
+import { direccionIP } from '../../config';
 
 
 const Recuperar: React.FC = () => {
@@ -18,7 +18,7 @@ const Recuperar: React.FC = () => {
 
   const presentToast = (position: 'top' | 'middle' | 'bottom') => {
     present({
-      message: 'Se ha mandado el correo correctamente',
+      message: 'Se ha enviado el correo correctamente',
       duration: 2000,
       position: position,
       cssClass: 'custom-toast',

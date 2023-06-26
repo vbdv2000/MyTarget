@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonButton, IonItem, IonLabel, IonText, IonIcon, IonCard, IonFooter, IonGrid, IonCol, IonRow, IonButtons, IonBackButton, useIonToast, IonImg } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonToolbar, IonInput, IonButton, IonItem, IonLabel, IonText, IonCard, IonCol, IonRow, IonButtons, useIonToast, IonImg } from '@ionic/react';
 import './Login.css';
 import axios from 'axios';
 import { useHistory } from 'react-router';
 import { useCookies } from 'react-cookie';
-import { direccionIP } from '../../../config';
+import { direccionIP } from '../../config';
 import logo from '../../../public/assets/icono-negro-sin-fondo.png';
 import { GoogleLogin } from '@react-oauth/google';
 import jwt_decode from 'jwt-decode'
-import tokenService from './../../../services/token.service.js';
 
 
 

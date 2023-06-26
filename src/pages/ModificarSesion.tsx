@@ -5,7 +5,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useCookies } from 'react-cookie';
 import { useHistory } from 'react-router';
-import { direccionIP } from '../../config';
+import { direccionIP } from '../config';
 const ModificarSesion: React.FC = () => {
 
     const [fecha, setFecha] = useState('');
@@ -238,9 +238,12 @@ const ModificarSesion: React.FC = () => {
             const params = new URLSearchParams(window.location.search);
             const nuevaFecha = params.get("fecha") ?? ''; //Se hace esto para que compile, si el valor de las params es nulo, el valor es ''
             const nuevaHora = params.get("hora") ?? '';
+            console.log(params);
             setFecha(nuevaFecha);
             setHora(nuevaHora);
             try {
+                console.log(nuevaFecha);
+                console.log(nuevaHora);
                 const response = await axios.get(`http://${direccionIP}:5000/sesion`, 
                 {
                     params: {
