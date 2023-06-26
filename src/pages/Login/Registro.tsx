@@ -3,7 +3,7 @@ import { IonPage, IonContent, IonItem, IonLabel, IonInput, IonButton, IonCol, Io
 import './Login.css';
 import axios from 'axios';
 import { direccionIP } from '../../config';
-import logo from '../../../public/assets/icono-negro-sin-fondo.png';
+import logo from '../../images/icono-negro-sin-fondo.png';
 
 
 const Registro: React.FC = () => {

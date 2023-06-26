@@ -1,5 +1,5 @@
 import './Principal.css';
-import cancha from '../../public/assets/cancha.jpeg';
+import cancha from '../images/cancha.jpeg';
 import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonButton, IonImg, IonInput, IonItem, IonLabel, IonCard, useIonToast } from '@ionic/react';
 import { FormEvent, useEffect, useState } from 'react';
 import axios from 'axios';

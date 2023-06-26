@@ -1,7 +1,7 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonButton, IonCol, IonIcon, IonLabel, IonRow, IonCard, IonItem, IonBackButton, IonButtons, useIonToast, IonImg, IonText } from '@ionic/react';
 import React, { useState } from 'react';
 import './Login.css';
-import logo from '../../../public/assets/icono-negro-sin-fondo.png';
+import logo from '../../images/icono-negro-sin-fondo.png';
 import axios from 'axios';
 import { direccionIP } from '../../config';
 

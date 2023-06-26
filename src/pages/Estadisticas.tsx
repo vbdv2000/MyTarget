@@ -1,6 +1,6 @@
 import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonText, IonRefresher, IonRefresherContent, RefresherEventDetail, useIonViewDidEnter, IonButton, IonCol, IonIcon, IonRow, IonProgressBar, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonAccordion, IonAccordionGroup, IonItem, IonLabel, IonImg } from "@ionic/react";
 import axios from "axios";
-import cancha from '../../public/assets/cancha.jpeg';
+import cancha from '../images/cancha.jpeg';
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { direccionIP } from "../config";
 import { useCookies } from "react-cookie";
