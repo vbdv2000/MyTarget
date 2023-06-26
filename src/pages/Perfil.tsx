@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import './Principal.css';
 import { useHistory } from 'react-router';
 import { useCookies } from 'react-cookie';
-import { direccionIP } from '../../config';
+import { direccionIP } from '../config';
 
 const Perfil: React.FC = () => {
   const history = useHistory();

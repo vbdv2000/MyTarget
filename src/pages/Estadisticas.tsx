@@ -2,7 +2,7 @@ import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonMenuButton, 
 import axios from "axios";
 import cancha from '../../public/assets/cancha.jpeg';
 import { MutableRefObject, useEffect, useRef, useState } from "react";
-import { direccionIP } from "../../config";
+import { direccionIP } from "../config";
 import { useCookies } from "react-cookie";
 import { useHistory } from "react-router";
 import { chevronDownCircleOutline} from "ionicons/icons";
@@ -139,11 +139,12 @@ const Estadisticas: React.FC = () => {
         //Formateamos las sesiones para que guarde en sesiones la fecha con el formato yyyy-mm-dd
         const sesionesFormateadas = await Promise.all(response.data.sesiones.map(async (sesion: Sesion) => {
           const fechaFormateada = new Date(sesion.fecha).toISOString().slice(0, 10);
+          const horaFormateada = new Date(sesion.hora).toISOString().slice(11, 16);
   
           const response2 = await axios.get(`http://${direccionIP}:5000/sesion`, {
             params: {
               fecha: fechaFormateada,
-              hora: sesion.hora
+              hora: horaFormateada
             },
             headers: {
               'Authorization': `Bearer ${token}`
@@ -154,7 +155,8 @@ const Estadisticas: React.FC = () => {
           const zonasFormateadas = await Promise.all(info.zonas.map((zona: Zona) => {
             return {
               ...zona,
-              fecha: fechaFormateada
+              fecha: fechaFormateada,
+              hora: horaFormateada
             };
           }));
           console.log(zonasFormateadas);
@@ -222,6 +224,7 @@ const Estadisticas: React.FC = () => {
           const sesionModificada: Sesion = {
             ...sesion,
             fecha: fechaFormateada,
+            hora: horaFormateada,
             zonas: zonasFormateadas,
             tiros_realizados_total: tr.toString(),
             tiros_anotados_total: ta.toString(),

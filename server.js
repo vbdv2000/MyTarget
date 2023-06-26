@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
-const tokenExpTime = require('./config').tokenExpTime;
+const tokenExpTime = require('./src/config').tokenExpTime;
 const nodemailer = require('nodemailer');
 
 
@@ -40,11 +40,18 @@ app.post('/login', async (req, res) => {
     // Consulta a la base de datos
     try {
         const connection = await conectarDB();
-        const [rows] = await connection.execute('SELECT * FROM usuario WHERE email = ? ', [email]);
-        
+        const query = 'SELECT * FROM usuario WHERE email = @email';
+        const request = connection.request();
+        request.input('email', email); // Valor proporcionado por el usuario
+
+        const result = await request.query(query);
+        const rows = result.recordset;
+        console.log(rows);
 
         if (rows.length > 0) {
           const usuarioEncontrado = rows[0];
+          //console.log(usuarioEncontrado);
+
           // Comparar contraseñas
           const iguales = await bcrypt.compare(password, usuarioEncontrado.contrasena);
 
@@ -52,7 +59,7 @@ app.post('/login', async (req, res) => {
             // Inicio correcto
             const token = tokenService.creaToken(usuarioEncontrado);
             console.log(token);
-            res.cookie('token', token, { maxAge: tokenExpTime, httpOnly: true }); //Enviamos una cookie con una duración de 1 min
+            res.cookie('token', token, { maxAge: tokenExpTime, httpOnly: true }); //Enviamos una cookie con una duración de tokenExpTime min
             res.status(200).json({ token, usuario: {email: usuarioEncontrado.email } });
           } else {
             // Error de contraseña
@@ -62,7 +69,7 @@ app.post('/login', async (req, res) => {
           // Si no hay resultados, enviamos un error de autenticación 
           res.status(401).json({ error: 'El email introducido no está registrado' });
         }
-        connection.end();
+        connection.close();
 
     } catch (error) {
       console.error(error);
@@ -75,25 +82,33 @@ app.post('/registro', async (req, res) => {
   const { nombre, apellidos, email, password, equipo, posicion, mano_habil } = req.body;
   try {
     const connection = await conectarDB();
-    const [rows] = await connection.execute('SELECT * FROM usuario WHERE email = ? ', [email]);
+    const query = 'SELECT * FROM usuario WHERE email = @email';
+    const request = connection.request();
+    request.input('email', email); 
+
+    const result = await request.query(query);
+    const rows = result.recordset;
 
     if (rows.length == 0) {
       bcrypt.hash(password, 10, async (err, hash) => {
-      if (err) {
-        console.error(err);
-      } else {  
-        // Insertamos un nuevo usuario
-      
-        const [result] = await connection.query('INSERT INTO usuario (nombre, apellidos, email, contrasena, equipo, posicion, mano_habil) VALUES (?, ?, ?, ?, ?, ?, ?)', 
-        [ nombre, 
-          apellidos, 
-          email, 
-          hash, 
-          equipo !== undefined ? equipo : null, 
-          posicion !== undefined ? posicion : null, 
-          mano_habil !== undefined ? mano_habil : null]);  
+        if (err) {
+          console.error(err);
+        } else {  
+          // Insertamos un nuevo usuario evitando INYECCIONES SQL
+          const query1 = `INSERT INTO usuario (nombre, apellidos, email, contrasena, equipo, posicion, mano_habil)
+          VALUES (@nombre, @apellidos, @email, @contrasena, @equipo, @posicion, @mano_habil)`;
 
-          console.log(result);  
+          const request1 = connection.request();
+          request1.input('nombre', nombre);
+          request1.input('apellidos', apellidos);
+          request1.input('email', email);
+          request1.input('contrasena', hash);
+          request1.input('equipo', equipo !== undefined ? equipo : null);
+          request1.input('posicion', posicion !== undefined ? posicion : null);
+          request1.input('mano_habil', mano_habil !== undefined ? mano_habil : null);
+
+          const result1 = await request1.query(query1);
+          console.log(result1);  
         }
       });
 
@@ -107,7 +122,7 @@ app.post('/registro', async (req, res) => {
         error: 'Registro no válido',
         description: 'Email ya registrado en nuestra base de datos'
       });
-      connection.end();
+      connection.close();
 
     }
   } catch (error) {
@@ -124,25 +139,31 @@ app.post('/registroOAuth', async (req, res) => {
   const usuario = {email: email};
   const password = generaPassword();
   console.log(usuario.email);
+  console.log(email);
   try {
     const connection = await conectarDB();
-    const [rows] = await connection.execute('SELECT * FROM usuario WHERE email = ? ', [email]);
+    const query = 'SELECT * FROM usuario WHERE email = @email';
+    const request = connection.request();
+    request.input('email', email); 
 
-    if (rows.length == 0) {
+    const result = await request.query(query);
+    const rows = result.recordset;
+
+    if (rows.length == 0) {//Usuario que no existe en la BD
       const hash = bcrypt.hashSync(password, 10);
       
-      // Insertamos un nuevo usuario
-      const [result] = await connection.query('INSERT INTO usuario (nombre, apellidos, email, contrasena, equipo, posicion, mano_habil) VALUES (?, ?, ?, ?, ?, ?, ?)', 
-      [ nombre, 
-        apellidos, 
-        email, 
-        hash, 
-        null, 
-        null, 
-        null
-      ]);  
+      // Insertamos un nuevo usuario evitando INYECCIONES SQL
+      const query1 = `INSERT INTO usuario (nombre, apellidos, email, contrasena, equipo, posicion, mano_habil)
+      VALUES (@nombre, @apellidos, @email, @contrasena, null, null, null)`;
 
-      console.log(result);  
+      const request1 = connection.request();
+      request1.input('nombre', nombre);
+      request1.input('apellidos', apellidos);
+      request1.input('email', email);
+      request1.input('contrasena', hash);
+
+      const result1 = await request1.query(query1);
+      console.log(result1);
       const token = tokenService.creaToken(usuario);
       res.cookie('token', token, { maxAge: tokenExpTime, httpOnly: true }); //Enviamos una cookie con una duración de 1 min
 
@@ -152,7 +173,7 @@ app.post('/registroOAuth', async (req, res) => {
         token: token
       });
 
-    } else {
+    } else { //Usuario que ya está registrado en la bd
       const token = tokenService.creaToken(rows[0]);
       console.log(token);
       res.cookie('token', token, { maxAge: tokenExpTime, httpOnly: true }); //Enviamos una cookie con una duración de 1 min
@@ -163,15 +184,13 @@ app.post('/registroOAuth', async (req, res) => {
         token: token
       });
     }
-    connection.end();
+    connection.close();
   } catch (error) {
     console.error(error);
     // Enviamos una respuesta de error 
     res.status(500).send('Error al crear usuario');
   }
 });
-
-
 
 // Solicitud GET para recuperar la contraseña
 app.get('/recuperar', async (req, res) => {
@@ -181,8 +200,12 @@ app.get('/recuperar', async (req, res) => {
     const email = req.query.email;
 
     const connection = await conectarDB();
+    const query = 'SELECT * FROM usuario WHERE email = @email';
+    const request = connection.request();
+    request.input('email', email); 
 
-    const [rows] = await connection.execute('SELECT * FROM usuario WHERE email = ? ', [email]);
+    const result = await request.query(query);
+    const rows = result.recordset;
  
     // Si hay un usuario con ese email
     if (rows.length == 1) {
@@ -193,26 +216,26 @@ app.get('/recuperar', async (req, res) => {
       enviarCorreo(email, newPassword);
 
       // Modificar contraseña
-      bcrypt.hash(newPassword, 10, async (err, hash) => {
-        if (err) {
-          console.error(err);
-        } else {  
-          const [rows2] = await connection.execute('UPDATE usuario SET contrasena = ? WHERE email = ? ', [hash, email]);
-          connection.end();
-          console.log(rows2);
-          res.status(201).json({
-            mensaje: 'Contraseña modificada correctamente',
-            usuario: email
-          });
-        }
-      })
+      const hash = bcrypt.hashSync(newPassword, 10);
+         
+      const query1 = 'UPDATE usuario SET contrasena = @contrasena WHERE email = @email';
+      const request1 = connection.request();
+      request1.input('contrasena', hash); 
+      request1.input('email', email); 
+      
+      const result1 = await request1.query(query1);          
+      console.log(result1.recordset);
+      res.status(201).json({
+        mensaje: 'Contraseña modificada correctamente',
+        usuario: email
+      });
     } else {
       res.status(400).json({
         error: 'Error restableciendo',
         mensaje: 'Email no registrado en nuestra base de datos'
       });
     }
-
+    connection.close();
   } catch (error) {
     console.error(error);
     // Enviamos una respuesta de error 
@@ -247,7 +270,7 @@ function enviarCorreo( email,  password){
   };
 
 function generaPassword () {
-  const caracteresPermitidos = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,-;:_';
+  const caracteresPermitidos = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,-_';
   let newPassword = '';
 
   // Generar la contraseña aleatoria con 10 caracteres
@@ -266,7 +289,12 @@ app.get('/usuario', auth, async (req, res) => {
   res.header('Access-Control-Allow-Credentials', 'true');
   try{
     const connection = await conectarDB();
-    const [rows] = await connection.execute('SELECT * FROM usuario WHERE email = ? ', [email]);
+    const query = 'SELECT * FROM usuario WHERE email = @email';
+    const request = connection.request();
+    request.input('email', email); // Valor proporcionado por el usuario
+
+    const result = await request.query(query);
+    const rows = result.recordset;
 
     // Si la consulta devuelve resultados, enviamos el usuario
     if (rows.length > 0) {
@@ -274,7 +302,7 @@ app.get('/usuario', auth, async (req, res) => {
     } else {
       res.status(404).send('Usuario no encontrado'); // Si no hay resultados, enviamos un error 404 
     }
-    connection.end();
+    connection.close();
 
     } catch(error){
     res.status(error.status).json({ message: error.message });
@@ -288,10 +316,17 @@ app.put('/usuario', auth, async (req, res) => {
   try{
     const { nombre, apellidos, equipo, posicion, mano_habil } = req.body;
     const connection = await conectarDB();
-    const [rows] = await connection.execute(
-      `UPDATE usuario SET nombre = ?, apellidos = ?, equipo = ?, posicion = ?, mano_habil = ? WHERE email = ?`,
-      [nombre, apellidos, equipo, posicion, mano_habil, email]
-    );
+    const query = `UPDATE usuario SET nombre = @nombre, apellidos = @apellidos, equipo = @equipo, posicion = @posicion, mano_habil = @mano_habil WHERE email = @email`;
+    const request = connection.request();
+    request.input('nombre', nombre); 
+    request.input('apellidos', apellidos); 
+    request.input('equipo', equipo); 
+    request.input('posicion', posicion);
+    request.input('mano_habil', mano_habil); 
+    request.input('email', email); 
+
+    const result = await request.query(query);
+    console.log(result);
     res.status(200).json({ 
       mensaje: 'Usuario actualizado correctamente' , 
       usuario: {
@@ -303,7 +338,7 @@ app.put('/usuario', auth, async (req, res) => {
         mano_habil: mano_habil
       }
     });
-    connection.end();
+    connection.close();
 
   } catch(error){
     res.status(error.status).json({ message: error.message });
@@ -318,15 +353,19 @@ app.get('/sesiones', auth,  async (req, res) => {
  
   try{
     const connection = await conectarDB();
-    const [rows] = await connection.execute('SELECT * FROM sesion WHERE usuario = ? ORDER BY fecha ASC', [email]);
+    const query = `SELECT * FROM sesion WHERE usuario = @usuario ORDER BY fecha ASC`;
+    const request = connection.request();
+    request.input('usuario', email); 
 
+    const result = await request.query(query);
+    const rows = result.recordset;
     // Enviamos las sesiones
     if (rows.length > 0) {
       res.status(201).json({sesiones: rows});
     } else {
       res.status(404).send('Sesiones no encontradas'); // Si no hay resultados, enviamos un error 404 
     }       
-    connection.end();
+    connection.close();
 
     } catch(error){
     res.status(error.status).json({ message: error.message });
@@ -335,18 +374,24 @@ app.get('/sesiones', auth,  async (req, res) => {
 
 //Ruta DELETE para eliminar una sesión concreta
 app.delete('/sesiones/:fecha/:hora', auth, async (req, res) => {
-  const email = req.email ;
   //res.header('Access-Control-Allow-Origin', `http://${direccionIP}:3000`);
   res.header('Access-Control-Allow-Credentials', 'true');
-
+  const email = req.email ;
   const fecha = req.params.fecha;
   const hora = req.params.hora;  
   try {
     const connection = await conectarDB();
-    const [rows] = await connection.execute('DELETE FROM sesion WHERE fecha=? and hora=? and usuario=?', [fecha, hora, email]);
+    const query = 'DELETE FROM sesion WHERE fecha = @fecha AND hora = @hora AND usuario = @usuario';
+    const request = connection.request();
+    request.input('fecha', fecha); 
+    request.input('hora', hora);
+    request.input('usuario', email); 
+
+    const result = await request.query(query);
+    console.log(result);
     res.status(201).json({mensaje: "La sesion se ha eliminado correctamente"});
     
-    connection.end();
+    connection.close();
   } catch (error) {
     console.log(error);
     res.status(500).send(error.message);
@@ -356,7 +401,7 @@ app.delete('/sesiones/:fecha/:hora', auth, async (req, res) => {
 
 //Ruta GET para obtener los datos de una sesión y sus zonsa de tiro
 app.get('/sesion', auth,  async (req, res) => {
-  const email = req.email ;
+  const email = req.email;
   const fecha = req.query.fecha;
   const hora = req.query.hora;
   console.log(fecha);
@@ -366,21 +411,52 @@ app.get('/sesion', auth,  async (req, res) => {
  
   try{
     const connection = await conectarDB();
-    const [rows] = await connection.execute('SELECT * FROM sesion WHERE fecha=? and hora=? and usuario = ?', [fecha, hora, email]);
+    const querySesion = 'SELECT * FROM sesion WHERE fecha = @fecha AND hora = @hora AND usuario = @usuario';
+    const requestSesion = connection.request();
+    requestSesion.input('fecha', fecha); 
+    requestSesion.input('hora', hora); 
+    requestSesion.input('usuario', email); 
+    
+    const result = await requestSesion.query(querySesion);
+    const rows = result.recordset;
+    console.log(result);
+    console.log(rows);
+    connection.close();
 
-    const [zonas] = await connection.execute('SELECT * FROM zona WHERE fecha=? and hora=? and usuario = ?', [fecha, hora, email]);
+    
+    /*  NO SE MUY BIEN PORQUE PERO HE TENIDO
+        QUE CERRAR LA CONEXIÓN A LA BD CON LA 
+        PRIMERA CONSULTA Y ABRIR OTRA NUEVA PARA
+        LA SIGUIENTE, PORQUE SINO SALTABA UN ERROR
+        NO CONTROLADO, MIENTRAS QUE EN POSTMAN
+        HE COMPROBADO QUE LA LLAMADA COMO TAL NO 
+        TIENE NINGUN PROBLEMA, ADEMÁS ASÍ FUNCIONA
+    */
 
-    // Enviamos las sesiones
+    const connection2 = await conectarDB();
+    const queryZona = 'SELECT * FROM zona WHERE fecha = @fecha AND hora = @hora AND usuario = @usuario';
+    const requestZona = connection2.request();
+    requestZona.input('fecha', fecha); 
+    requestZona.input('hora', hora); 
+    requestZona.input('usuario', email); 
+
+    const resultZona = await requestZona.query(queryZona);
+    const zonas = resultZona.recordset;
+    console.log(zonas);
+    //const zonas = resultZona.recordset;
+    //console.log(resultZona);
+    // Enviamos la sesion
+
     if (rows.length > 0) {
-      res.status(201).send({
+      res.status(200).send({
         sesion: rows[0],
         zonas: zonas
       });
     } else {
       res.status(404).send('Sesion no encontrada'); // Si no hay resultados, enviamos un error 404 
     }
-    connection.end();
-    } catch(error){
+    connection2.close();
+  } catch(error){
     res.status(error.status).json({ message: error.message });
   }
 })
@@ -391,13 +467,14 @@ app.post('/sesion', auth, async (req, res) => {
   const { nombre, fecha, hora, tr1, ta1, tr2, ta2, tr3, ta3, tr4, ta4, tr5, ta5, tr6, ta6, tr7, ta7, tr8, ta8, tr9, ta9, tr10, ta10 } = req.body;
   try {
     const connection = await conectarDB();
-    const [result] = await connection.query('INSERT INTO sesion (nombre, fecha, hora, usuario) VALUES (?, ?, ?, ?)', 
-    [ 
-      nombre, 
-      fecha, 
-      hora, 
-      usuario
-    ]);  
+    const query = 'INSERT INTO sesion (nombre, fecha, hora, usuario) VALUES (@nombre, @fecha, @hora, @usuario)';
+    const request = connection.request();
+    request.input('nombre', nombre); 
+    request.input('fecha', fecha); 
+    request.input('hora', hora); 
+    request.input('usuario', usuario); 
+
+    const result = await request.query(query);
     //Bucle para crear las zonas de la sesion y que se haga una transacción
     for (let index = 1; index <= 10; index++) {
       tiros_realizados=eval("tr"+index);
@@ -407,16 +484,18 @@ app.post('/sesion', auth, async (req, res) => {
       
       console.log(tiros_realizados);
       console.log(tiros_anotados);
-      const [result2] = await connection.query('INSERT INTO zona (posicion, tiros_realizados, tiros_anotados, fecha, hora, usuario) VALUES(?, ?, ?, ?, ?, ?)', 
-      [ 
-        index, 
-        tiros_realizados === '' ? 0 : tiros_realizados,
-        tiros_anotados === '' ? 0 : tiros_anotados, 
-        fecha,
-        hora,
-        usuario
-      ]);  
-      
+
+      const query1 = 'INSERT INTO zona (posicion, tiros_realizados, tiros_anotados, fecha, hora, usuario) VALUES (@posicion, @tiros_realizados, @tiros_anotados, @fecha, @hora, @usuario)';
+      const request1 = connection.request();
+      request1.input('posicion', index); 
+      request1.input('tiros_realizados', tiros_realizados === '' ? 0 : tiros_realizados); 
+      request1.input('tiros_anotados', tiros_anotados === '' ? 0 : tiros_anotados); 
+      request1.input('fecha', fecha); 
+      request1.input('hora', hora); 
+      request1.input('usuario', usuario); 
+
+      const result1 = await request1.query(query1);
+      console.log(result1);
     }
     console.log(result);  
     //console.log(result2);  
@@ -426,7 +505,7 @@ app.post('/sesion', auth, async (req, res) => {
       usuario: usuario
     });
 
-    connection.end();
+    connection.close();
 
   } catch (error) {
     console.error(error);
@@ -442,52 +521,125 @@ app.put('/sesion', auth, async (req, res) => {
   try{
     const { nombre, fecha, hora, tr1, ta1, tr2, ta2, tr3, ta3, tr4, ta4, tr5, ta5, tr6, ta6, tr7, ta7, tr8, ta8, tr9, ta9, tr10, ta10 } = req.body;
     const connection = await conectarDB();
-    const [rows] = await connection.execute(
-      `UPDATE sesion SET nombre = ? WHERE usuario = ? and fecha = ? and hora = ?`,
-      [nombre, email, fecha, hora]
-    );
+    const updateSesionQuery = `UPDATE sesion SET nombre = @nombre WHERE usuario = @usuario and fecha = @fecha and hora = @hora`;
+    const requestSesion = connection.request();
+    requestSesion.input('nombre', nombre); 
+    requestSesion.input('usuario', email); 
+    requestSesion.input('fecha', fecha); 
+    requestSesion.input('hora', hora); 
+    const result = await requestSesion.query(updateSesionQuery);
+    const rows = result.recordset;
 
-    const [zona1] = await connection.execute(
-      `UPDATE zona SET tiros_realizados = ? , tiros_anotados = ? WHERE usuario = ? and fecha = ? and hora = ? and posicion = ?`,
-      [tr1, ta1, email, fecha, hora, 1]
-    );
-    const [zona2] = await connection.execute(
-      `UPDATE zona SET tiros_realizados = ? , tiros_anotados = ? WHERE usuario = ? and fecha = ? and hora = ? and posicion = ?`,
-      [tr2, ta2, email, fecha, hora, 2]
-    );
-    const [zona3] = await connection.execute(
-      `UPDATE zona SET tiros_realizados = ? , tiros_anotados = ? WHERE usuario = ? and fecha = ? and hora = ? and posicion = ?`,
-      [tr3, ta3, email, fecha, hora, 3]
-    );
-    const [zona4] = await connection.execute(
-      `UPDATE zona SET tiros_realizados = ? , tiros_anotados = ? WHERE usuario = ? and fecha = ? and hora = ? and posicion = ?`,
-      [tr4, ta4, email, fecha, hora, 4]
-    );
-    const [zona5] = await connection.execute(
-      `UPDATE zona SET tiros_realizados = ? , tiros_anotados = ? WHERE usuario = ? and fecha = ? and hora = ? and posicion = ?`,
-      [tr5, ta5, email, fecha, hora, 5]
-    );
+    const updateZona1Query = `UPDATE zona SET tiros_realizados = @tiros_realizados, tiros_anotados = @tiros_anotados WHERE usuario = @usuario and fecha = @fecha and hora = @hora and posicion = @posicion`;
+    const requestZona1 = connection.request();
+    requestZona1.input('tiros_realizados', tr1); 
+    requestZona1.input('tiros_anotados', ta1); 
+    requestZona1.input('usuario', email); 
+    requestZona1.input('fecha', fecha); 
+    requestZona1.input('hora', hora); 
+    requestZona1.input('posicion', 1); 
+    const result1 = await requestZona1.query(updateZona1Query);
+    const zona1 = result1.recordset;
 
-    const [zona6] = await connection.execute(
-      `UPDATE zona SET tiros_realizados = ? , tiros_anotados = ? WHERE usuario = ? and fecha = ? and hora = ? and posicion = ?`,
-      [tr6, ta6, email, fecha, hora, 6]
-    );
-    const [zona7] = await connection.execute(
-      `UPDATE zona SET tiros_realizados = ? , tiros_anotados = ? WHERE usuario = ? and fecha = ? and hora = ? and posicion = ?`,
-      [tr7, ta7, email, fecha, hora, 7]
-    );
-    const [zona8] = await connection.execute(
-      `UPDATE zona SET tiros_realizados = ? , tiros_anotados = ? WHERE usuario = ? and fecha = ? and hora = ? and posicion = ?`,
-      [tr8, ta8, email, fecha, hora, 8]
-    );
-    const [zona9] = await connection.execute(
-      `UPDATE zona SET tiros_realizados = ? , tiros_anotados = ? WHERE usuario = ? and fecha = ? and hora = ? and posicion = ?`,
-      [tr9, ta9, email, fecha, hora, 9]
-    );
-    const [zona10] = await connection.execute(
-      `UPDATE zona SET tiros_realizados = ? , tiros_anotados = ? WHERE usuario = ? and fecha = ? and hora = ? and posicion = ?`,
-      [tr10, ta10, email, fecha, hora, 10]
-    );
+    const updateZona2Query = `UPDATE zona SET tiros_realizados = @tiros_realizados, tiros_anotados = @tiros_anotados WHERE usuario = @usuario and fecha = @fecha and hora = @hora and posicion = @posicion`;
+    const requestZona2 = connection.request();
+    requestZona2.input('tiros_realizados', tr2); 
+    requestZona2.input('tiros_anotados', ta2); 
+    requestZona2.input('usuario', email); 
+    requestZona2.input('fecha', fecha); 
+    requestZona2.input('hora', hora); 
+    requestZona2.input('posicion', 2); 
+    const result2 = await requestZona2.query(updateZona2Query);
+    const zona2 = result2.recordset;
+
+
+    const updateZona3Query = `UPDATE zona SET tiros_realizados = @tiros_realizados, tiros_anotados = @tiros_anotados WHERE usuario = @usuario and fecha = @fecha and hora = @hora and posicion = @posicion`;
+    const requestZona3 = connection.request();
+    requestZona3.input('tiros_realizados', tr3); 
+    requestZona3.input('tiros_anotados', ta3); 
+    requestZona3.input('usuario', email); 
+    requestZona3.input('fecha', fecha); 
+    requestZona3.input('hora', hora); 
+    requestZona3.input('posicion', 3); 
+    const result3 = await requestZona3.query(updateZona3Query);
+    const zona3 = result3.recordset;
+
+    const updateZona4Query = `UPDATE zona SET tiros_realizados = @tiros_realizados, tiros_anotados = @tiros_anotados WHERE usuario = @usuario and fecha = @fecha and hora = @hora and posicion = @posicion`;
+    const requestZona4 = connection.request();
+    requestZona4.input('tiros_realizados', tr4); 
+    requestZona4.input('tiros_anotados', ta4); 
+    requestZona4.input('usuario', email); 
+    requestZona4.input('fecha', fecha); 
+    requestZona4.input('hora', hora); 
+    requestZona4.input('posicion', 4); 
+    const result4 = await requestZona4.query(updateZona4Query);
+    const zona4 = result4.recordset;
+
+    const updateZona5Query = `UPDATE zona SET tiros_realizados = @tiros_realizados, tiros_anotados = @tiros_anotados WHERE usuario = @usuario and fecha = @fecha and hora = @hora and posicion = @posicion`;
+    const requestZona5 = connection.request();
+    requestZona5.input('tiros_realizados', tr5); 
+    requestZona5.input('tiros_anotados', ta5); 
+    requestZona5.input('usuario', email); 
+    requestZona5.input('fecha', fecha); 
+    requestZona5.input('hora', hora); 
+    requestZona5.input('posicion', 5); 
+    const result5 = await requestZona5.query(updateZona5Query);
+    const zona5 = result5.recordset;
+
+    const updateZona6Query = `UPDATE zona SET tiros_realizados = @tiros_realizados, tiros_anotados = @tiros_anotados WHERE usuario = @usuario and fecha = @fecha and hora = @hora and posicion = @posicion`;
+    const requestZona6 = connection.request();
+    requestZona6.input('tiros_realizados', tr6); 
+    requestZona6.input('tiros_anotados', ta6); 
+    requestZona6.input('usuario', email); 
+    requestZona6.input('fecha', fecha); 
+    requestZona6.input('hora', hora); 
+    requestZona6.input('posicion', 6); 
+    const result6 = await requestZona6.query(updateZona6Query);
+    const zona6 = result6.recordset;
+
+    const updateZona7Query = `UPDATE zona SET tiros_realizados = @tiros_realizados, tiros_anotados = @tiros_anotados WHERE usuario = @usuario and fecha = @fecha and hora = @hora and posicion = @posicion`;
+    const requestZona7 = connection.request();
+    requestZona7.input('tiros_realizados', tr7);
+    requestZona7.input('tiros_anotados', ta7);
+    requestZona7.input('usuario', email);
+    requestZona7.input('fecha', fecha);
+    requestZona7.input('hora', hora);
+    requestZona7.input('posicion', 7);
+    const result7 = await requestZona7.query(updateZona7Query);
+    const zona7 = result7.recordset;
+
+    const updateZona8Query = `UPDATE zona SET tiros_realizados = @tiros_realizados, tiros_anotados = @tiros_anotados WHERE usuario = @usuario and fecha = @fecha and hora = @hora and posicion = @posicion`;
+    const requestZona8 = connection.request();
+    requestZona8.input('tiros_realizados', tr8);
+    requestZona8.input('tiros_anotados', ta8);
+    requestZona8.input('usuario', email);
+    requestZona8.input('fecha', fecha);
+    requestZona8.input('hora', hora);
+    requestZona8.input('posicion', 8);
+    const result8 = await requestZona8.query(updateZona8Query);
+    const zona8 = result8.recordset;
+
+    const updateZona9Query = `UPDATE zona SET tiros_realizados = @tiros_realizados, tiros_anotados = @tiros_anotados WHERE usuario = @usuario and fecha = @fecha and hora = @hora and posicion = @posicion`;
+    const requestZona9 = connection.request();
+    requestZona9.input('tiros_realizados', tr9);
+    requestZona9.input('tiros_anotados', ta9);
+    requestZona9.input('usuario', email);
+    requestZona9.input('fecha', fecha);
+    requestZona9.input('hora', hora);
+    requestZona9.input('posicion', 9);
+    const result9 = await requestZona9.query(updateZona9Query);
+    const zona9 = result9.recordset;
+
+    const updateZona10Query = `UPDATE zona SET tiros_realizados = @tiros_realizados, tiros_anotados = @tiros_anotados WHERE usuario = @usuario and fecha = @fecha and hora = @hora and posicion = @posicion`;
+    const requestZona10 = connection.request();
+    requestZona10.input('tiros_realizados', tr10);
+    requestZona10.input('tiros_anotados', ta10);
+    requestZona10.input('usuario', email);
+    requestZona10.input('fecha', fecha);
+    requestZona10.input('hora', hora);
+    requestZona10.input('posicion', 10);
+    const result10 = await requestZona10.query(updateZona10Query);
+    const zona10 = result10.recordset;
 
     res.status(200).json({ 
       mensaje: 'Sesion y zonas actualizada correctamente' , 
@@ -497,7 +649,7 @@ app.put('/sesion', auth, async (req, res) => {
       }
     });
 
-    connection.end();
+    connection.close();
   } catch(error){
     res.status(error.status).json({ message: error.message });
   }

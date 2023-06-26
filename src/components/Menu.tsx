@@ -3,7 +3,6 @@ import {
   IonCard,
   IonCardContent,
   IonCardHeader,
-  IonCardSubtitle,
   IonCardTitle,
   IonCol,
   IonContent,
@@ -12,21 +11,19 @@ import {
   IonItem,
   IonLabel,
   IonList,
-  IonListHeader,
   IonMenu,
   IonMenuToggle,
-  IonNote,
   IonRow,
 } from '@ionic/react';
 
 import logo from '../../public/assets/icono-negro-sin-fondo.png';
 import { useHistory, useLocation } from 'react-router-dom';
-import { homeSharp, statsChartSharp, basketballSharp, personSharp, basketball, logOutSharp } from 'ionicons/icons';
+import { statsChartSharp, basketballSharp, personSharp, logOutSharp } from 'ionicons/icons';
 import './Menu.css';
 import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import axios from 'axios';
-import { direccionIP } from '../../config';
+import { direccionIP } from '../config';
 
 
 interface AppPage {
