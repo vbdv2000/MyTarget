@@ -16,7 +16,7 @@ import {
   IonRow,
 } from '@ionic/react';
 
-import logo from '../../public/assets/icono-negro-sin-fondo.png';
+import logo from '../images/icono-negro-sin-fondo.png';
 import { useHistory, useLocation } from 'react-router-dom';
 import { statsChartSharp, basketballSharp, personSharp, logOutSharp } from 'ionicons/icons';
 import './Menu.css';

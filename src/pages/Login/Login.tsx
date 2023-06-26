@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useHistory } from 'react-router';
 import { useCookies } from 'react-cookie';
 import { direccionIP } from '../../config';
-import logo from '../../../public/assets/icono-negro-sin-fondo.png';
+import logo from '../../images/icono-negro-sin-fondo.png';
 import { GoogleLogin } from '@react-oauth/google';
 import jwt_decode from 'jwt-decode'
 
