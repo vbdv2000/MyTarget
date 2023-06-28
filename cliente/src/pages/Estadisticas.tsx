@@ -2,7 +2,7 @@ import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonMenuButton, 
 import axios from "axios";
 import cancha from '../images/cancha.jpeg';
 import { MutableRefObject, useEffect, useRef, useState } from "react";
-import { direccionIP } from "../config";
+import { direccionIP } from '../../config';
 import { useCookies } from "react-cookie";
 import { useHistory } from "react-router";
 import { chevronDownCircleOutline} from "ionicons/icons";
@@ -358,7 +358,7 @@ const Estadisticas: React.FC = () => {
 
     // Ejes x e y
     const xAxis = d3.axisBottom(xScale)
-    .tickFormat(d3.timeFormat("%d-%m")) // Cambia el tamaño del eje X
+    .tickFormat(d3.timeFormat("%d-%m")); // Cambia el tamaño del eje X
     const yAxis = d3.axisLeft(yScale)
       .tickValues(d3.range(0, 101, 20));
 

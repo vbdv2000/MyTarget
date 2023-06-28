@@ -1,4 +1,13 @@
 {
+  "scripts": {
+    "edgio:dev": "edgio dev",
+    "edgio:build": "edgio build",
+    "edgio:deploy": "edgio deploy",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons)/)'",
+    "eject": "react-scripts eject"
+  },
   "name": "my-basket-target",
   "version": "0.0.1",
   "private": true,
@@ -60,12 +69,6 @@
     "workbox-strategies": "^5.1.4",
     "workbox-streams": "^5.1.4"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons)/)'",
-    "eject": "react-scripts eject"
-  },
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -89,6 +92,11 @@
   },
   "devDependencies": {
     "@capacitor/cli": "4.7.0",
+    "@edgio/cli": "^7.0.22",
+    "@edgio/core": "^7.0.22",
+    "@edgio/custom-connector": "^7.0.22",
+    "@edgio/devtools": "^7.0.22",
+    "@edgio/prefetch": "^7.0.22",
     "@types/babel__core": "^7.20.0",
     "@types/d3": "^7.4.0",
     "@types/nodemailer": "^6.4.8"
