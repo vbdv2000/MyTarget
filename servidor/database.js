@@ -2,9 +2,9 @@ import sql from "mssql";
 
 export async function conectarDB() {
   const config = {
-    server: 'mytarget2.database.windows.net',
+    server: 'mytarget.database.windows.net',
     port: 1433,
-    database: 'mytarget',
+    database: 'my-target',
     user: 'mytarget',
     password: 'Micontrasena6.',
     options: {
