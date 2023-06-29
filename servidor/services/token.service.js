@@ -1,10 +1,9 @@
 'use strict'
 
-const jwt = require('jwt-simple');
-const moment = require('moment');
+import jwt from 'jwt-simple';
+import moment from 'moment';
 
-const SECRET = require('../config').secret;
-const EXP_TIME = require('../config').tokenExpTime;
+import { secret, tokenExpTime } from '../config.js';
 
 // Creartoken
 
@@ -20,22 +19,22 @@ const EXP_TIME = require('../config').tokenExpTime;
 // ..
 //      VERIFY_SIGNATURE = { base64UrlEncode(HEADER) + "." + base64UrlEncode(PAYLOAD), SECRET}
 
-function creaToken(usuario) {
+export function creaToken(usuario) {
     const payload = {
         sub: usuario.email,
         iat: moment().unix(),
-        exp: moment().add( EXP_TIME, 'minutes').unix()
+        exp: moment().add( tokenExpTime, 'minutes').unix()
     };
-    return jwt.encode( payload, SECRET);
+    return jwt.encode( payload, secret);
 }   
 
 // decodificaToken
 //
 // Dado un token JWT nos dice si es correcto o no o si está caducado
-function decodificaToken( token) {
+export function decodificaToken( token) {
     return new Promise( ( resolve, reject ) => {
         try {
-            const payload = jwt.decode( token, SECRET, false);
+            const payload = jwt.decode( token, secret, false);
             if ( payload.exp <= moment().unix() ){
                 reject( {
                     status: 401,
@@ -51,8 +50,3 @@ function decodificaToken( token) {
         }
     })
 }
-
-module.exports = {
-    creaToken, 
-    decodificaToken
-};

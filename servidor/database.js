@@ -1,6 +1,6 @@
-const sql = require('mssql');
+import sql from "mssql";
 
-async function conectarDB() {
+export async function conectarDB() {
   const config = {
     server: 'mytarget.database.windows.net',
     port: 1433,
@@ -22,5 +22,3 @@ async function conectarDB() {
     throw error;
   }
 }
-
-module.exports = { conectarDB };
