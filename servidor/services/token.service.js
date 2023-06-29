@@ -3,8 +3,8 @@
 const jwt = require('jwt-simple');
 const moment = require('moment');
 
-const SECRET = require('../src/config').secret;
-const EXP_TIME = require('../src/config').tokenExpTime;
+const SECRET = require('../config').secret;
+const EXP_TIME = require('../config').tokenExpTime;
 
 // Creartoken
 

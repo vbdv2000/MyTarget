@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import ReactPaginate from "react-paginate";
 import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonGrid, IonRow, IonCol, IonButton, IonIcon, useIonToast } from "@ionic/react";
 import { useCookies } from 'react-cookie';
 import { useHistory } from 'react-router';
 import { addCircleOutline, createOutline, trash } from "ionicons/icons";
 import './Principal.css';
-import { direccionIP } from "../config";
+import { direccionIP } from '../../config';
 
 
 
