@@ -51,7 +51,7 @@ const LoginPage = () => {
   const responseMessage = async (response: any) => {
     try{
       console.log(response);
-      var usuario = jwt_decode(response.credential);
+      var usuario : any = jwt_decode(response.credential);
       console.log(usuario);
       
       //Obtenemos los datos que nos interesan del token que genera el OAuth
@@ -69,7 +69,7 @@ const LoginPage = () => {
       //history.push('/perfil')
       window.location.href = '/perfil';
 
-    } catch(err){
+    } catch(err : any){
       if (err.response && err.response.status === 400) {
         console.log("El usuario ya está creado en nuestra base de datos y ERROR");
         //presentToast();
@@ -84,10 +84,11 @@ const LoginPage = () => {
     }
       
   };
-  const errorMessage = (error: any) => {
+  
+  function errorMensaje(): void {
     console.log(error);
     setError(error);
-  };
+  }
 
   return (
     <IonPage>
@@ -130,8 +131,8 @@ const LoginPage = () => {
             </IonText>
           </div>
           
-          <div style={{textAlign:"-webkit-center", marginBottom:"12px"}}>
-            <GoogleLogin onSuccess={responseMessage} onError={errorMessage} />
+          <div className='googleLogin' style={{marginBottom:"12px"}}>
+            <GoogleLogin onSuccess={responseMessage} onError={errorMensaje} />
           </div>
           
           

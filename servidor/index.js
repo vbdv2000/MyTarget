@@ -493,6 +493,10 @@ app.post('/sesion', auth, async (req, res) => {
     request.input('usuario', usuario); 
 
     const result = await request.query(query);
+
+    connection.close(); // Cerramos la conexión y se van abriendo nuevas para solucionar las caídas
+
+
     //Bucle para crear las zonas de la sesion y que se haga una transacción
     for (let index = 1; index <= 10; index++) {
       var tiros_realizados=eval("tr"+index);
@@ -502,7 +506,7 @@ app.post('/sesion', auth, async (req, res) => {
       
       console.log(tiros_realizados);
       console.log(tiros_anotados);
-
+      const connection = await conectarDB();
       const query1 = 'INSERT INTO zona (posicion, tiros_realizados, tiros_anotados, fecha, hora, usuario) VALUES (@posicion, @tiros_realizados, @tiros_anotados, @fecha, @hora, @usuario)';
       const request1 = connection.request();
       request1.input('posicion', index); 
@@ -514,6 +518,7 @@ app.post('/sesion', auth, async (req, res) => {
 
       const result1 = await request1.query(query1);
       console.log(result1);
+      connection.close();
     }
     console.log(result);  
     //console.log(result2);  
