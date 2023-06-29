@@ -34,9 +34,9 @@ async function auth(req, res, next) {
 
 //Ruta de POST cuando se va a inciar sesión 
 app.post('/login', async (req, res) => {
-  res.header('Access-Control-Allow-Origin', `http://localhost:3000`);
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Origin', `https://my-target-api.vercel.app/`);
+  //res.header('Access-Control-Allow-Origin', `http://localhost:3000`);
+  //res.header('Access-Control-Allow-Credentials', 'true');
+  //res.header('Access-Control-Allow-Origin', `https://my-target-api.vercel.app/`);
   const { email, password } = req.body;
   // Consulta a la base de datos
   try {
@@ -495,8 +495,8 @@ app.post('/sesion', auth, async (req, res) => {
     const result = await request.query(query);
     //Bucle para crear las zonas de la sesion y que se haga una transacción
     for (let index = 1; index <= 10; index++) {
-      tiros_realizados=eval("tr"+index);
-      tiros_anotados=eval("ta"+index);
+      var tiros_realizados=eval("tr"+index);
+      var tiros_anotados=eval("ta"+index);
       tiros_realizados === '' ? 0 : tiros_realizados;
       tiros_anotados === '' ? 0 : tiros_anotados;
       
