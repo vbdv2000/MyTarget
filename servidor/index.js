@@ -34,45 +34,48 @@ async function auth(req, res, next) {
 
 //Ruta de POST cuando se va a inciar sesión 
 app.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-    // Consulta a la base de datos
-    try {
-        const connection = await conectarDB();
-        const query = 'SELECT * FROM usuario WHERE email = @email';
-        const request = connection.request();
-        request.input('email', email); // Valor proporcionado por el usuario
+  res.header('Access-Control-Allow-Origin', `http://localhost:3000`);
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Origin', `https://my-target-api.vercel.app/`);
+  const { email, password } = req.body;
+  // Consulta a la base de datos
+  try {
+      const connection = await conectarDB();
+      const query = 'SELECT * FROM usuario WHERE email = @email';
+      const request = connection.request();
+      request.input('email', email); // Valor proporcionado por el usuario
 
-        const result = await request.query(query);
-        const rows = result.recordset;
-        console.log(rows);
+      const result = await request.query(query);
+      const rows = result.recordset;
+      console.log(rows);
 
-        if (rows.length > 0) {
-          const usuarioEncontrado = rows[0];
-          //console.log(usuarioEncontrado);
+      if (rows.length > 0) {
+        const usuarioEncontrado = rows[0];
+        //console.log(usuarioEncontrado);
 
-          // Comparar contraseñas
-          const iguales = await bcrypt.compare(password, usuarioEncontrado.contrasena);
+        // Comparar contraseñas
+        const iguales = await bcrypt.compare(password, usuarioEncontrado.contrasena);
 
-          if (iguales) {
-            // Inicio correcto
-            const token = creaToken(usuarioEncontrado);
-            console.log(token);
-            res.cookie('token', token, { maxAge: tokenExpTime, httpOnly: true }); //Enviamos una cookie con una duración de tokenExpTime min
-            res.status(200).json({ token, usuario: {email: usuarioEncontrado.email } });
-          } else {
-            // Error de contraseña
-            res.status(401).json({ error: 'Contraseña incorrecta' });
-          }
+        if (iguales) {
+          // Inicio correcto
+          const token = creaToken(usuarioEncontrado);
+          console.log(token);
+          res.cookie('token', token, { maxAge: tokenExpTime, httpOnly: true }); //Enviamos una cookie con una duración de tokenExpTime min
+          res.status(200).json({ token, usuario: {email: usuarioEncontrado.email } });
         } else {
-          // Si no hay resultados, enviamos un error de autenticación 
-          res.status(401).json({ error: 'El email introducido no está registrado' });
+          // Error de contraseña
+          res.status(401).json({ error: 'Contraseña incorrecta' });
         }
-        connection.close();
+      } else {
+        // Si no hay resultados, enviamos un error de autenticación 
+        res.status(401).json({ error: 'El email introducido no está registrado' });
+      }
+      connection.close();
 
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Error al iniciar sesión'); 
-    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al iniciar sesión'); 
+  }
 });
 
 //ruta de POST para crear a un usuario nuevo
@@ -237,7 +240,7 @@ app.get('/recuperar', async (req, res) => {
   } catch (error) {
     console.error(error);
     // Enviamos una respuesta de error 
-    res.status(500).send('Error al crear usuario');
+    res.status(500).send('Error al restablecer password');
   }
   
 
@@ -279,6 +282,34 @@ function generaPassword () {
 
   return newPassword;
 }
+
+
+//Ruta GET para obtener el usuario y que se muestre en el perfil los datos
+app.get('/usuarios', async (req, res) => {
+  //res.header('Access-Control-Allow-Origin', `http://${direccionIP}:3000`);
+  res.header('Access-Control-Allow-Credentials', 'true');
+  try{
+    const connection = await conectarDB();
+    const query = 'SELECT * FROM usuario';
+    const request = connection.request();
+
+    const result = await request.query(query);
+    const rows = result.recordset;
+
+    // Si la consulta devuelve resultados, enviamos el usuario
+    if (rows.length > 0) {
+      res.send(rows);
+    } else {
+      res.status(404).send('No hay usuarios'); // Si no hay resultados, enviamos un error 404 
+    }
+    connection.close();
+
+    } catch(error){
+    res.status(error.status).json({ message: error.message });
+  }
+})
+
+
 
 //Ruta GET para obtener el usuario y que se muestre en el perfil los datos
 app.get('/usuario', auth, async (req, res) => {

@@ -2,7 +2,7 @@ import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonMenuButton, 
 import axios from "axios";
 import cancha from '../images/cancha.jpeg';
 import { MutableRefObject, useEffect, useRef, useState } from "react";
-import { direccionIP } from '../../config';
+import { direccionIP } from '../config';
 import { useCookies } from "react-cookie";
 import { useHistory } from "react-router";
 import { chevronDownCircleOutline} from "ionicons/icons";

@@ -5,7 +5,7 @@ import { useCookies } from 'react-cookie';
 import { useHistory } from 'react-router';
 import { addCircleOutline, createOutline, trash } from "ionicons/icons";
 import './Principal.css';
-import { direccionIP } from '../../config';
+import { direccionIP } from '../config';
 
 
 

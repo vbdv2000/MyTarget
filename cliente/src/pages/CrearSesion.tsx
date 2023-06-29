@@ -5,7 +5,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useCookies } from 'react-cookie';
 import { useHistory } from 'react-router';
-import { direccionIP } from '../../config';
+import { direccionIP } from '../config';
 const CrearSesion: React.FC = () => {
 
     const [cookies, setCookie, removeCookie] = useCookies(['token']);

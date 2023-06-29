@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { IonPage, IonContent, IonItem, IonLabel, IonInput, IonButton, IonCol, IonIcon, IonRow, IonHeader, IonCard, IonList, IonSelect, IonSelectOption, IonCheckbox, IonToolbar, IonButtons, IonBackButton, useIonToast, IonText, IonImg } from '@ionic/react';
 import './Login.css';
 import axios from 'axios';
-import { direccionIP } from '../../../config';
+import { direccionIP } from '../../config';
 import logo from '../../images/icono-negro-sin-fondo.png';
 
 

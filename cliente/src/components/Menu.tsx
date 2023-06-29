@@ -23,7 +23,7 @@ import './Menu.css';
 import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import axios from 'axios';
-import { direccionIP } from '../../config';
+import { direccionIP } from '../config';
 
 
 interface AppPage {
