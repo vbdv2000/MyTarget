@@ -240,7 +240,7 @@ app.get('/recuperar', async (req, res) => {
   } catch (error) {
     console.error(error);
     // Enviamos una respuesta de error 
-    res.status(500).send('Error al restablecer password');
+    res.status(500).send(error);
   }
   
 
@@ -287,7 +287,7 @@ function generaPassword () {
 //Ruta GET para obtener el usuario y que se muestre en el perfil los datos
 app.get('/usuarios', async (req, res) => {
   //res.header('Access-Control-Allow-Origin', `http://${direccionIP}:3000`);
-  res.header('Access-Control-Allow-Credentials', 'true');
+  //res.header('Access-Control-Allow-Credentials', 'true');
   try{
     const connection = await conectarDB();
     const query = 'SELECT * FROM usuario';
