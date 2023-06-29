@@ -34,45 +34,48 @@ async function auth(req, res, next) {
 
 //Ruta de POST cuando se va a inciar sesión 
 app.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-    // Consulta a la base de datos
-    try {
-        const connection = await conectarDB();
-        const query = 'SELECT * FROM usuario WHERE email = @email';
-        const request = connection.request();
-        request.input('email', email); // Valor proporcionado por el usuario
+  //res.header('Access-Control-Allow-Origin', `http://localhost:3000`);
+  //res.header('Access-Control-Allow-Credentials', 'true');
+  //res.header('Access-Control-Allow-Origin', `https://my-target-api.vercel.app/`);
+  const { email, password } = req.body;
+  // Consulta a la base de datos
+  try {
+      const connection = await conectarDB();
+      const query = 'SELECT * FROM usuario WHERE email = @email';
+      const request = connection.request();
+      request.input('email', email); // Valor proporcionado por el usuario
 
-        const result = await request.query(query);
-        const rows = result.recordset;
-        console.log(rows);
+      const result = await request.query(query);
+      const rows = result.recordset;
+      console.log(rows);
 
-        if (rows.length > 0) {
-          const usuarioEncontrado = rows[0];
-          //console.log(usuarioEncontrado);
+      if (rows.length > 0) {
+        const usuarioEncontrado = rows[0];
+        //console.log(usuarioEncontrado);
 
-          // Comparar contraseñas
-          const iguales = await bcrypt.compare(password, usuarioEncontrado.contrasena);
+        // Comparar contraseñas
+        const iguales = await bcrypt.compare(password, usuarioEncontrado.contrasena);
 
-          if (iguales) {
-            // Inicio correcto
-            const token = creaToken(usuarioEncontrado);
-            console.log(token);
-            res.cookie('token', token, { maxAge: tokenExpTime, httpOnly: true }); //Enviamos una cookie con una duración de tokenExpTime min
-            res.status(200).json({ token, usuario: {email: usuarioEncontrado.email } });
-          } else {
-            // Error de contraseña
-            res.status(401).json({ error: 'Contraseña incorrecta' });
-          }
+        if (iguales) {
+          // Inicio correcto
+          const token = creaToken(usuarioEncontrado);
+          console.log(token);
+          res.cookie('token', token, { maxAge: tokenExpTime, httpOnly: true }); //Enviamos una cookie con una duración de tokenExpTime min
+          res.status(200).json({ token, usuario: {email: usuarioEncontrado.email } });
         } else {
-          // Si no hay resultados, enviamos un error de autenticación 
-          res.status(401).json({ error: 'El email introducido no está registrado' });
+          // Error de contraseña
+          res.status(401).json({ error: 'Contraseña incorrecta' });
         }
-        connection.close();
+      } else {
+        // Si no hay resultados, enviamos un error de autenticación 
+        res.status(401).json({ error: 'El email introducido no está registrado' });
+      }
+      connection.close();
 
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Error al iniciar sesión'); 
-    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al iniciar sesión'); 
+  }
 });
 
 //ruta de POST para crear a un usuario nuevo
@@ -237,7 +240,7 @@ app.get('/recuperar', async (req, res) => {
   } catch (error) {
     console.error(error);
     // Enviamos una respuesta de error 
-    res.status(500).send('Error al crear usuario');
+    res.status(500).send(error);
   }
   
 
@@ -279,6 +282,23 @@ function generaPassword () {
 
   return newPassword;
 }
+
+
+//Ruta GET para obtener el usuario y que se muestre en el perfil los datos
+app.get('/usuarios', async (req, res) => {
+  //res.header('Access-Control-Allow-Origin', `http://${direccionIP}:3000`);
+  //res.header('Access-Control-Allow-Credentials', 'true');
+  try{
+    const connection = await conectarDB();
+    res.send("La conexión se abre");
+    connection.close();
+
+    } catch(error){
+    res.status(error.status).json({ message: error.message });
+  }
+})
+
+
 
 //Ruta GET para obtener el usuario y que se muestre en el perfil los datos
 app.get('/usuario', auth, async (req, res) => {
@@ -473,16 +493,16 @@ app.post('/sesion', auth, async (req, res) => {
     request.input('usuario', usuario); 
 
     const result = await request.query(query);
+
     //Bucle para crear las zonas de la sesion y que se haga una transacción
     for (let index = 1; index <= 10; index++) {
-      tiros_realizados=eval("tr"+index);
-      tiros_anotados=eval("ta"+index);
+      var tiros_realizados=eval("tr"+index);
+      var tiros_anotados=eval("ta"+index);
       tiros_realizados === '' ? 0 : tiros_realizados;
       tiros_anotados === '' ? 0 : tiros_anotados;
       
       console.log(tiros_realizados);
       console.log(tiros_anotados);
-
       const query1 = 'INSERT INTO zona (posicion, tiros_realizados, tiros_anotados, fecha, hora, usuario) VALUES (@posicion, @tiros_realizados, @tiros_anotados, @fecha, @hora, @usuario)';
       const request1 = connection.request();
       request1.input('posicion', index); 

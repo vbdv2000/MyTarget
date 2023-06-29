@@ -2,7 +2,7 @@ import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonMenuButton, 
 import axios from "axios";
 import cancha from '../images/cancha.jpeg';
 import { MutableRefObject, useEffect, useRef, useState } from "react";
-import { direccionIP } from '../../config';
+import { direccionIP } from '../config';
 import { useCookies } from "react-cookie";
 import { useHistory } from "react-router";
 import { chevronDownCircleOutline} from "ionicons/icons";
@@ -120,7 +120,7 @@ const Estadisticas: React.FC = () => {
     }
     try {
     console.log(token);
-    const response = await axios.get(`http://${direccionIP}:5000/sesiones`,{
+    const response = await axios.get(`${direccionIP}/sesiones`,{
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -141,7 +141,7 @@ const Estadisticas: React.FC = () => {
           const fechaFormateada = new Date(sesion.fecha).toISOString().slice(0, 10);
           const horaFormateada = new Date(sesion.hora).toISOString().slice(11, 16);
   
-          const response2 = await axios.get(`http://${direccionIP}:5000/sesion`, {
+          const response2 = await axios.get(`${direccionIP}/sesion`, {
             params: {
               fecha: fechaFormateada,
               hora: horaFormateada
@@ -347,9 +347,16 @@ const Estadisticas: React.FC = () => {
       .append('g')
       .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
+
+    const fechas = [];
+    for (let obj of datos) {
+      fechas.push(obj.fecha);
+    }
+
+    var domain : any = d3.extent(fechas);
     // Escalas para los ejes x e y
     const xScale = d3.scaleTime()
-    .domain(d3.extent(datos, d => d.fecha))
+    .domain(domain)
     .range([0, width]);
 
     const yScale = d3.scaleLinear()
@@ -357,8 +364,8 @@ const Estadisticas: React.FC = () => {
       .range([height, 0]);
 
     // Ejes x e y
-    const xAxis = d3.axisBottom(xScale)
-    .tickFormat(d3.timeFormat("%d-%m")); // Cambia el tamaño del eje X
+    const xAxis = d3.axisBottom(xScale);
+     // Cambia el tamaño del eje X
     const yAxis = d3.axisLeft(yScale)
       .tickValues(d3.range(0, 101, 20));
 
@@ -373,9 +380,9 @@ const Estadisticas: React.FC = () => {
       .call(yAxis);
 
     // Línea del gráfico
-    const line = d3.line()
-      .x(d => xScale(d.fecha) )
-      .y(d => yScale(d.acierto));
+    const line : any = d3.line()
+      .x(function(d: any){ return xScale(d.fecha); })
+      .y(function(d: any){ return yScale(d.acierto);});
 
     svg.append('path')
       .datum(datos)

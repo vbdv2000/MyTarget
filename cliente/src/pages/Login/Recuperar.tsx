@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import './Login.css';
 import logo from '../../images/icono-negro-sin-fondo.png';
 import axios from 'axios';
-import { direccionIP } from '../../../config';
+import { direccionIP } from '../../config';
 
 
 const Recuperar: React.FC = () => {
@@ -27,7 +27,7 @@ const Recuperar: React.FC = () => {
 
   const enviarCorreo = async () => {
     try{
-      const response = await axios.get(`http://${direccionIP}:5000/recuperar?email=${email}`);
+      const response = await axios.get(`${direccionIP}/recuperar?email=${email}`);
       console.log(response);
       presentToast('top');
     } catch (errorr) {

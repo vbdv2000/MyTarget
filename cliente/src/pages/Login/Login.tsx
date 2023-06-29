@@ -4,7 +4,7 @@ import './Login.css';
 import axios from 'axios';
 import { useHistory } from 'react-router';
 import { useCookies } from 'react-cookie';
-import { direccionIP } from '../../../config';
+import { direccionIP } from '../../config';
 import logo from '../../images/icono-negro-sin-fondo.png';
 import { GoogleLogin } from '@react-oauth/google';
 import jwt_decode from 'jwt-decode'
@@ -33,7 +33,7 @@ const LoginPage = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(`http://${direccionIP}:5000/login`, { email, password });
+      const response = await axios.post(`${direccionIP}/login`, { email, password });
       var token = response.data.token;
       //localStorage.setItem('token', token);
       console.log(response);
@@ -51,14 +51,14 @@ const LoginPage = () => {
   const responseMessage = async (response: any) => {
     try{
       console.log(response);
-      var usuario = jwt_decode(response.credential);
+      var usuario : any = jwt_decode(response.credential);
       console.log(usuario);
       
       //Obtenemos los datos que nos interesan del token que genera el OAuth
       const nombre = usuario.given_name;
       const apellidos = usuario.family_name;
       const email = usuario.email;
-      const res = await axios.post(`http://${direccionIP}:5000/registroOAuth`, 
+      const res = await axios.post(`${direccionIP}/registroOAuth`, 
       { nombre, apellidos, email});
       console.log(res);
       var token = res.data.token;
@@ -69,7 +69,7 @@ const LoginPage = () => {
       //history.push('/perfil')
       window.location.href = '/perfil';
 
-    } catch(err){
+    } catch(err : any){
       if (err.response && err.response.status === 400) {
         console.log("El usuario ya está creado en nuestra base de datos y ERROR");
         //presentToast();
@@ -84,10 +84,11 @@ const LoginPage = () => {
     }
       
   };
-  const errorMessage = (error: any) => {
+  
+  function errorMensaje(): void {
     console.log(error);
     setError(error);
-  };
+  }
 
   return (
     <IonPage>
@@ -130,8 +131,8 @@ const LoginPage = () => {
             </IonText>
           </div>
           
-          <div style={{textAlign:"-webkit-center", marginBottom:"12px"}}>
-            <GoogleLogin onSuccess={responseMessage} onError={errorMessage} />
+          <div className='googleLogin' style={{marginBottom:"12px"}}>
+            <GoogleLogin onSuccess={responseMessage} onError={errorMensaje} />
           </div>
           
           

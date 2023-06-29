@@ -73,3 +73,6 @@ ion-toast.custom-toast {
     --color: #00d40b;
 }
     
+.googleLogin{
+    text-align: -webkit-center;
+}

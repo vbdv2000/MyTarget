@@ -23,7 +23,7 @@ import './Menu.css';
 import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import axios from 'axios';
-import { direccionIP } from '../../config';
+import { direccionIP } from '../config';
 
 
 interface AppPage {
@@ -74,7 +74,7 @@ const Menu: React.FC = () => {
         return;
       }
       try{
-        const response = await axios.get(`http://${direccionIP}:5000/usuario`, 
+        const response = await axios.get(`${direccionIP}/usuario`, 
         {
           headers: {
             'Authorization': `Bearer ${token}`

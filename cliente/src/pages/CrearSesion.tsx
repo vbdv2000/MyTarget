@@ -5,7 +5,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useCookies } from 'react-cookie';
 import { useHistory } from 'react-router';
-import { direccionIP } from '../../config';
+import { direccionIP } from '../config';
 const CrearSesion: React.FC = () => {
 
     const [cookies, setCookie, removeCookie] = useCookies(['token']);
@@ -201,7 +201,7 @@ const CrearSesion: React.FC = () => {
         return;
         }
         try {
-            const response = await axios.post(`http://${direccionIP}:5000/sesion`, 
+            const response = await axios.post(`${direccionIP}/sesion`, 
             { 
                 nombre, fecha, hora, tr1, ta1, tr2, ta2, tr3, ta3, tr4, ta4, tr5, ta5, tr6, ta6, tr7, ta7, tr8, ta8, tr9, ta9, tr10, ta10},
             {
