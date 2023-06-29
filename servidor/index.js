@@ -289,20 +289,9 @@ app.get('/usuarios', async (req, res) => {
   //res.header('Access-Control-Allow-Origin', `http://${direccionIP}:3000`);
   //res.header('Access-Control-Allow-Credentials', 'true');
   try{
-    const connection = await conectarDB();
-    const query = 'SELECT * FROM usuario';
-    const request = connection.request();
-
-    const result = await request.query(query);
-    const rows = result.recordset;
-
-    // Si la consulta devuelve resultados, enviamos el usuario
-    if (rows.length > 0) {
-      res.send(rows);
-    } else {
-      res.status(404).send('No hay usuarios'); // Si no hay resultados, enviamos un error 404 
-    }
-    connection.close();
+    
+    res.send("Holaaaa");
+    
 
     } catch(error){
     res.status(error.status).json({ message: error.message });
