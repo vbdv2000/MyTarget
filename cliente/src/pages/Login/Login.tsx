@@ -33,7 +33,7 @@ const LoginPage = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(`http://${direccionIP}:5000/login`, { email, password });
+      const response = await axios.post(`${direccionIP}/login`, { email, password });
       var token = response.data.token;
       //localStorage.setItem('token', token);
       console.log(response);
@@ -58,7 +58,7 @@ const LoginPage = () => {
       const nombre = usuario.given_name;
       const apellidos = usuario.family_name;
       const email = usuario.email;
-      const res = await axios.post(`http://${direccionIP}:5000/registroOAuth`, 
+      const res = await axios.post(`${direccionIP}/registroOAuth`, 
       { nombre, apellidos, email});
       console.log(res);
       var token = res.data.token;

@@ -51,7 +51,7 @@ const Registro: React.FC = () => {
           }
 
         if(password == password2){
-            const response = await axios.post(`http://${direccionIP}:5000/registro`, 
+            const response = await axios.post(`${direccionIP}/registro`, 
             { nombre, apellidos, email, password, equipo, posicion, mano_habil});
             console.log(response);
             presentToast();

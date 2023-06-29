@@ -205,7 +205,7 @@ const ModificarSesion: React.FC = () => {
             return;
         }
         try {
-            const response = await axios.put(`http://${direccionIP}:5000/sesion`, 
+            const response = await axios.put(`${direccionIP}/sesion`, 
             { 
                 nombre, fecha, hora, tr1, ta1, tr2, ta2, tr3, ta3, tr4, ta4, tr5, ta5, tr6, ta6, tr7, ta7, tr8, ta8, tr9, ta9, tr10, ta10},
             {
@@ -244,7 +244,7 @@ const ModificarSesion: React.FC = () => {
             try {
                 console.log(nuevaFecha);
                 console.log(nuevaHora);
-                const response = await axios.get(`http://${direccionIP}:5000/sesion`, 
+                const response = await axios.get(`${direccionIP}/sesion`, 
                 {
                     params: {
                         fecha: nuevaFecha,

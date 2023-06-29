@@ -27,7 +27,7 @@ const Recuperar: React.FC = () => {
 
   const enviarCorreo = async () => {
     try{
-      const response = await axios.get(`http://${direccionIP}:5000/recuperar?email=${email}`);
+      const response = await axios.get(`${direccionIP}/recuperar?email=${email}`);
       console.log(response);
       presentToast('top');
     } catch (errorr) {

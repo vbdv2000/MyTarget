@@ -43,7 +43,7 @@ const Sesiones: React.FC = () => {
       }
       
       console.log(token);
-      axios.get(`http://${direccionIP}:5000/sesiones`,{
+      axios.get(`${direccionIP}/sesiones`,{
         headers: {
           'Authorization': `Bearer ${token}`
         }})
@@ -105,7 +105,7 @@ const Sesiones: React.FC = () => {
     console.log(token);
     try{  
       const response = await axios.delete(
-        `http://${direccionIP}:5000/sesiones/${fecha}/${hora}`,{
+        `${direccionIP}/sesiones/${fecha}/${hora}`,{
           headers: {
             'Authorization': `Bearer ${token}`
           }

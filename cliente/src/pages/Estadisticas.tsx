@@ -120,7 +120,7 @@ const Estadisticas: React.FC = () => {
     }
     try {
     console.log(token);
-    const response = await axios.get(`http://${direccionIP}:5000/sesiones`,{
+    const response = await axios.get(`${direccionIP}/sesiones`,{
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -141,7 +141,7 @@ const Estadisticas: React.FC = () => {
           const fechaFormateada = new Date(sesion.fecha).toISOString().slice(0, 10);
           const horaFormateada = new Date(sesion.hora).toISOString().slice(11, 16);
   
-          const response2 = await axios.get(`http://${direccionIP}:5000/sesion`, {
+          const response2 = await axios.get(`${direccionIP}/sesion`, {
             params: {
               fecha: fechaFormateada,
               hora: horaFormateada

@@ -74,7 +74,7 @@ const Menu: React.FC = () => {
         return;
       }
       try{
-        const response = await axios.get(`http://${direccionIP}:5000/usuario`, 
+        const response = await axios.get(`${direccionIP}/usuario`, 
         {
           headers: {
             'Authorization': `Bearer ${token}`
