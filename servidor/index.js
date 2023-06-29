@@ -1,13 +1,11 @@
-const express = require('express');
-const cors = require('cors');
-const bcrypt = require('bcrypt');
-const tokenExpTime = require('./config').tokenExpTime;
-const nodemailer = require('nodemailer');
-
-
-const tokenService = require('./services/token.service');
-const { conectarDB } = require('./database');
-const cookieParser = require('cookie-parser');
+import express from "express";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import bcrypt from "bcrypt";
+import nodemailer from "nodemailer";
+import { tokenExpTime } from './config.js';
+import { creaToken, decodificaToken } from "./services/token.service.js";
+import { conectarDB } from './database.js';
 
 const app = express();
 app.use(express.json());
@@ -25,7 +23,7 @@ async function auth(req, res, next) {
   }
   
   try{
-    const email = await tokenService.decodificaToken(token);
+    const email = await decodificaToken(token);
     req.email = email;
     next();
   } catch(error){
@@ -57,7 +55,7 @@ app.post('/login', async (req, res) => {
 
           if (iguales) {
             // Inicio correcto
-            const token = tokenService.creaToken(usuarioEncontrado);
+            const token = creaToken(usuarioEncontrado);
             console.log(token);
             res.cookie('token', token, { maxAge: tokenExpTime, httpOnly: true }); //Enviamos una cookie con una duración de tokenExpTime min
             res.status(200).json({ token, usuario: {email: usuarioEncontrado.email } });
@@ -164,7 +162,7 @@ app.post('/registroOAuth', async (req, res) => {
 
       const result1 = await request1.query(query1);
       console.log(result1);
-      const token = tokenService.creaToken(usuario);
+      const token = creaToken(usuario);
       res.cookie('token', token, { maxAge: tokenExpTime, httpOnly: true }); //Enviamos una cookie con una duración de 1 min
 
       res.status(200).json({
@@ -174,7 +172,7 @@ app.post('/registroOAuth', async (req, res) => {
       });
 
     } else { //Usuario que ya está registrado en la bd
-      const token = tokenService.creaToken(rows[0]);
+      const token = creaToken(rows[0]);
       console.log(token);
       res.cookie('token', token, { maxAge: tokenExpTime, httpOnly: true }); //Enviamos una cookie con una duración de 1 min
 
