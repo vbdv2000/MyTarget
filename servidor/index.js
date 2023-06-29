@@ -289,9 +289,9 @@ app.get('/usuarios', async (req, res) => {
   //res.header('Access-Control-Allow-Origin', `http://${direccionIP}:3000`);
   //res.header('Access-Control-Allow-Credentials', 'true');
   try{
-    
-    res.send("Holaaaa");
-    
+    const connection = await conectarDB();
+    res.send("La conexión se abre");
+    connection.close();
 
     } catch(error){
     res.status(error.status).json({ message: error.message });
