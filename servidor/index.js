@@ -110,13 +110,15 @@ app.post('/registro', async (req, res) => {
 
           const result1 = await request1.query(query1);
           console.log(result1);  
+
+          res.status(201).json({
+            mensaje: 'Usuario creado exitosamente',
+            usuario: email
+          });
         }
       });
 
-      res.status(201).json({
-        mensaje: 'Usuario creado exitosamente',
-        usuario: email
-      });
+     
 
     } else {
       res.status(400).json({
