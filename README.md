@@ -1,6 +1,7 @@
 # MyTarget
 Desarrollo de la aplicación "MyTarget" para el TFG de Ingeniería Informática de Víctor Berenguer Del Valle.
-El proyecto es de tipo full-stack, por lo que se divide el frontend por un lado, la carpeta de /cliente, y el backend por otro, que engloba todo lo que contiene la carpeta /servidor. Ambos se pueden ejecutar con el comando `npm start`, aunque actualmente el proyecto ya está ejecutándose de manera completa en un host determinado y en breve estará disponible la aplicación en Google Play. Si quieres ejecutarlo en local, deberás seguir estos pasos: 
+El proyecto es de tipo full-stack, por lo que se divide el frontend por un lado, la carpeta de /cliente, y el backend por otro, que engloba todo lo que contiene la carpeta /servidor. Ambos se pueden ejecutar con el comando `npm start`, aunque actualmente el proyecto ya está ejecutándose de manera completa en un host determinado y en breve estará disponible la aplicación en Google Play. La dirección donde se está ejecutando la aplicación completa es: https://my-target-snowy.vercel.app
+Si quieres ejecutarlo en local, deberás seguir estos pasos: 
 1. Clonas el repositorio a una carpeta en local
 2. Ejecutas en el directorio /cliente el comando `npm i` para instalar todas las dependencias del /cliente y haces lo mismo en el directorio /servidor, para instalar las dependencias del proyecto completo.
 3. Abres una ventana de comandos en el directorio de la carpeta /cliente y ejecutas el comando `npm start`, y haces lo mismo abriendo una ventana de comandos en la carpeta /servidor. Con esto funcionará la aplicación en local, pero debes cambiar entonces en el archivo config.js del cliente la dirección IP para poner 'http://localhost:5000', que es donde se estará ejecutando el servidor en local.
