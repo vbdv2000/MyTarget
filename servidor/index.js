@@ -276,8 +276,9 @@ function generaPassword () {
   return newPassword;
 }
 
-
+/*
 //Ruta GET para obtener el usuario y que se muestre en el perfil los datos
+EJEMPLO PARA MOSTRAR TODOS LOS USUARIOS DE LA BD SIN PERMISOS
 app.get('/usuarios', async (req, res) => {
   //res.header('Access-Control-Allow-Origin', `http://${direccionIP}:3000`);
   //res.header('Access-Control-Allow-Credentials', 'true');
@@ -297,7 +298,7 @@ app.get('/usuarios', async (req, res) => {
     res.status(error.status).json({ message: error.message });
   }
 })
-
+*/
 
 
 //Ruta GET para obtener el usuario y que se muestre en el perfil los datos
