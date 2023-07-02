@@ -117,9 +117,6 @@ app.post('/registro', async (req, res) => {
           });
         }
       });
-
-     
-
     } else {
       res.status(400).json({
         error: 'Registro no válido',
@@ -291,7 +288,14 @@ app.get('/usuarios', async (req, res) => {
   //res.header('Access-Control-Allow-Credentials', 'true');
   try{
     const connection = await conectarDB();
-    res.send("La conexión se abre");
+
+    const query = 'SELECT * FROM usuario';
+    const request = connection.request();
+
+    const result = await request.query(query);
+    const rows = result.recordset;
+
+    res.send(rows);
     connection.close();
 
     } catch(error){
