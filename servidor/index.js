@@ -123,9 +123,8 @@ app.post('/registro', async (req, res) => {
         error: 'Registro no válido',
         description: 'Email ya registrado en nuestra base de datos'
       });
-      connection.close();
-
     }
+    connection.close();
   } catch (error) {
     console.error(error);
     // Enviamos una respuesta de error 
