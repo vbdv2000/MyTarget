@@ -90,32 +90,27 @@ app.post('/registro', async (req, res) => {
     const result = await request.query(query);
     const rows = result.recordset;
 
-    if (rows.length == 0) {
-      bcrypt.hash(password, 10, async (err, hash) => {
-        if (err) {
-          console.error(err);
-        } else {  
-          // Insertamos un nuevo usuario evitando INYECCIONES SQL
-          const query1 = `INSERT INTO usuario (nombre, apellidos, email, contrasena, equipo, posicion, mano_habil)
-          VALUES (@nombre, @apellidos, @email, @contrasena, @equipo, @posicion, @mano_habil)`;
+    if (rows.length === 0) {
+      const hash = bcrypt.hashSync(password, 10);
+      // Insertamos un nuevo usuario evitando INYECCIONES SQL
+      const query1 = `INSERT INTO usuario (nombre, apellidos, email, contrasena, equipo, posicion, mano_habil)
+      VALUES (@nombre, @apellidos, @email, @contrasena, @equipo, @posicion, @mano_habil)`;
 
-          const request1 = connection.request();
-          request1.input('nombre', nombre);
-          request1.input('apellidos', apellidos);
-          request1.input('email', email);
-          request1.input('contrasena', hash);
-          request1.input('equipo', equipo !== undefined ? equipo : null);
-          request1.input('posicion', posicion !== undefined ? posicion : null);
-          request1.input('mano_habil', mano_habil !== undefined ? mano_habil : null);
+      const request1 = connection.request();
+      request1.input('nombre', nombre);
+      request1.input('apellidos', apellidos);
+      request1.input('email', email);
+      request1.input('contrasena', hash);
+      request1.input('equipo', equipo !== undefined ? equipo : null);
+      request1.input('posicion', posicion !== undefined ? posicion : null);
+      request1.input('mano_habil', mano_habil !== undefined ? mano_habil : null);
 
-          const result1 = await request1.query(query1);
-          console.log(result1);  
+      const result1 = await request1.query(query1);
+      console.log(result1);  
 
-          res.status(201).json({
-            mensaje: 'Usuario creado exitosamente',
-            usuario: email
-          });
-        }
+      res.status(201).json({
+        mensaje: 'Usuario creado exitosamente',
+        usuario: email
       });
     } else {
       res.status(400).json({
