@@ -599,7 +599,7 @@ const Estadisticas: React.FC = () => {
       return "#f92d2d"; // rojo
     } else if (valor >= 15 && valor < 30) {
       return "#ffadad"; // rojo claro
-    } else if (valor >= 30 && valor < 55) {
+    } else if (valor >= 30 && valor < 50) {
       return "#f6ff8e"; // amarillo
     } else if (valor >= 50 && valor < 65) {
       return "#98ff8e"; // verde claro
