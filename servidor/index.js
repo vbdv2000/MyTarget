@@ -244,7 +244,7 @@ function enviarCorreo( email,  password){
     service: 'gmail',
       auth: {
         user: 'my.basket.target@gmail.com',
-        pass: 'frljgjbghbqnswuk'
+        pass: 'ebqihcpxjiebtiyi'
       }
     });
 
